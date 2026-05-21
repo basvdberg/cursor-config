@@ -36,6 +36,7 @@ The updater **discovers** related repos automatically:
 - **Related repositories** is its own top-level bullet; each repo is one nested link: `  - [Display name](https://github.com/owner/repo)`.
 - Place **Related repositories** after the expanded repo tree (both at top level).
 - **Never** use relative paths like `../other-repo/` for cross-repo links (they break on GitHub).
+- **Always exclude** `cursor-config` from related repositories (tooling repo, not a content sibling).
 - **Do not** add folder trees or file lists for related repositories.
 
 Optional **`project-structure-external.json`** for display-name overrides only (discovery still drives which repos appear):

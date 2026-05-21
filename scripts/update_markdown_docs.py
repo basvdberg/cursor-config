@@ -14,6 +14,7 @@ from typing import Iterable
 
 DESCRIPTIONS_FILE = "project-structure-descriptions.json"
 EXTERNAL_REPOS_FILE = "project-structure-external.json"
+EXCLUDED_RELATED_REPOS = frozenset({"cursor-config"})
 
 GITHUB_REPO_RE = re.compile(
     r"https://github\.com/([^/\s\"')\]]+)/([^/\s\"')\]]+)",
@@ -522,7 +523,7 @@ def discover_related_github_repositories(repo_root: Path) -> tuple[str, list[tup
         sibling_git_repos(repo_root), owner=owner, target_slug=current_slug
     )
 
-    related_slugs = (outgoing | incoming) - {current_slug}
+    related_slugs = (outgoing | incoming) - {current_slug} - EXCLUDED_RELATED_REPOS
 
     entries: list[tuple[str, str]] = []
     for slug in sorted(related_slugs):
