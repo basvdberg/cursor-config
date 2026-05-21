@@ -1,0 +1,38 @@
+#!/bin/sh
+# Run shared pre-commit checks from cursor-config (Markdown docs, prompts, optional strict checks).
+set -e
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+PYTHON=""
+for candidate in python3 python py; do
+  if command -v "$candidate" >/dev/null 2>&1; then
+    PYTHON="$candidate"
+    break
+  fi
+done
+
+if [ -z "$PYTHON" ]; then
+  echo "pre-commit: python not found" >&2
+  exit 1
+fi
+
+CURSOR_CONFIG="${CURSOR_CONFIG_ROOT:-}"
+if [ -z "$CURSOR_CONFIG" ]; then
+  CURSOR_CONFIG="$(git config --get cursor.configPath 2>/dev/null || true)"
+fi
+if [ -z "$CURSOR_CONFIG" ] && [ -d "$ROOT/../cursor-config/scripts" ]; then
+  CURSOR_CONFIG="$(cd "$ROOT/../cursor-config" && pwd)"
+fi
+if [ -z "$CURSOR_CONFIG" ] && [ -d "$HOME/.cursor/cursor-config/scripts" ]; then
+  CURSOR_CONFIG="$HOME/.cursor/cursor-config"
+fi
+
+if [ -z "$CURSOR_CONFIG" ] || [ ! -f "$CURSOR_CONFIG/scripts/pre_commit.py" ]; then
+  echo "pre-commit: cursor-config not found. Clone it as a sibling or set CURSOR_CONFIG_ROOT." >&2
+  exit 1
+fi
+
+export PYTHONPATH="$CURSOR_CONFIG/scripts${PYTHONPATH:+:$PYTHONPATH}"
+exec "$PYTHON" "$CURSOR_CONFIG/scripts/pre_commit.py"
