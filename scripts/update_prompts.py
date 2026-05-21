@@ -39,6 +39,15 @@ PROJECT_FILTERS: list[tuple[str, list[str]]] = [
             r"exclude the title in the table of contents",
             r"cursor hook",
             r"better way.*table of contents",
+            r"cursor-config",
+            r"cursor_config",
+            r"install-skills",
+            r"markdown-doc-lib",
+            r"related repositor",
+            r"exclude.*cursor-config",
+            r"review-markdown-structure",
+            r"update_markdown_docs",
+            r"update_prompts",
         ],
     ),
     (
@@ -66,6 +75,15 @@ PROJECT_FILTERS: list[tuple[str, list[str]]] = [
             r"Handlebars",
             r"cbs\.json",
             r"WFS extractor",
+            r"cursor-config",
+            r"under construction",
+            r"for-the-badge",
+            r"shields\.io",
+            r"PoC completeness",
+            r"built-in GitHub notification",
+            r"Watch this repository",
+            r"Commit and push",
+            r"Update the prompts markdown",
         ],
     ),
     (
@@ -90,8 +108,24 @@ PROJECT_FILTERS: list[tuple[str, list[str]]] = [
             r"pre-commit\.py",
             r"table of contents for the entire project",
             r"Store all prompts",
+            r"cursor-config",
+            r"disclaimer",
+            r"Commit and push",
+            r"Update the prompts markdown",
+            r"related repositor",
         ],
     ),
+]
+
+SHARED_AUTOMATION_PATTERNS = [
+    r"cursor-config",
+    r"Move all scripts",
+    r"\.githooks",
+    r"setup-githooks",
+    r"\.cursor-config\.json",
+    r"delete.*empty folders",
+    r"Commit and push",
+    r"Update the prompts markdown",
 ]
 
 SKIP_PATTERNS = [
@@ -137,14 +171,33 @@ def score_prompt(prompt: str, patterns: list[str]) -> int:
 
 
 def assign_project(prompt: str) -> str | None:
-    best_name: str | None = None
-    best_score = 0
-    for name, patterns in PROJECT_FILTERS:
-        score = score_prompt(prompt, patterns)
-        if score > best_score:
-            best_score = score
-            best_name = name
-    return best_name
+    projects = projects_for_prompt(prompt)
+    if not projects:
+        return None
+    return sorted(projects)[0]
+
+
+def projects_for_prompt(prompt: str) -> set[str]:
+    scores = [
+        (name, score_prompt(prompt, patterns)) for name, patterns in PROJECT_FILTERS
+    ]
+    best = max(score for _, score in scores)
+    if best == 0:
+        if any(re.search(pat, prompt, re.IGNORECASE) for pat in SHARED_AUTOMATION_PATTERNS):
+            return {name for name, _ in PROJECT_FILTERS}
+        return set()
+    return {name for name, score in scores if score == best}
+
+
+def dedupe_prompts(prompts: list[str]) -> list[str]:
+    seen: set[str] = set()
+    unique: list[str] = []
+    for prompt in prompts:
+        key = prompt.strip()
+        if key and key not in seen:
+            seen.add(key)
+            unique.append(prompt)
+    return unique
 
 
 def extract_sessions_from_transcripts() -> list[list[str]]:
@@ -192,7 +245,9 @@ def extract_sessions_from_transcripts() -> list[list[str]]:
 def sessions_for_project(all_sessions: list[list[str]], project: str) -> list[list[str]]:
     filtered: list[list[str]] = []
     for session in all_sessions:
-        project_prompts = [p for p in session if assign_project(p) == project]
+        project_prompts = dedupe_prompts(
+            [p for p in session if project in projects_for_prompt(p)]
+        )
         if project_prompts:
             filtered.append(project_prompts)
     return filtered
