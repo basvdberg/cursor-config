@@ -86,3 +86,26 @@ Install skills from [cursor-config](https://github.com/basvdberg/cursor-config) 
 - [ ] Related set matches incoming/outgoing `github.com` references in markdown
 - [ ] No `../sibling-repo/` cross-repo paths
 - [ ] `markdown-project-structure` markers updated
+
+## Project structure
+
+<!-- markdown-project-structure:start -->
+- [cursor-config](../../readme.md)
+  - Githooks
+  - Skills
+    - Create Design Pattern
+      - [Create design pattern](../create-design-pattern/SKILL.md)
+      - [{Title}](../create-design-pattern/TEMPLATE.md)
+    - Markdown Project Structure
+      - [Markdown project structure](SKILL.md)
+    - Markdown Toc
+      - [Markdown table of contents](../markdown-toc/SKILL.md)
+    - Naming Convention Files Folders
+      - [Naming convention for files and folders](../naming-convention-files-folders/SKILL.md)
+    - Review Markdown Structure
+      - [Review Markdown structure](../review-markdown-structure/SKILL.md)
+- Related repositories
+  - [Data Engineering 2026](https://github.com/basvdberg/data-engineering-2026)
+  - [Data Engineering Design Patterns](https://github.com/basvdberg/data-engineering-design-patterns)
+  - [Data Solution 2026](https://github.com/basvdberg/data-solution-2026)
+<!-- markdown-project-structure:end -->

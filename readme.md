@@ -91,10 +91,15 @@ Git config `cursor.configPath` is set automatically by `setup-githooks`.
 - [cursor-config](readme.md)
   - Githooks
   - Skills
+    - Create Design Pattern
+      - [Create design pattern](skills/create-design-pattern/SKILL.md)
+      - [{Title}](skills/create-design-pattern/TEMPLATE.md)
     - Markdown Project Structure
       - [Markdown project structure](skills/markdown-project-structure/SKILL.md)
     - Markdown Toc
       - [Markdown table of contents](skills/markdown-toc/SKILL.md)
+    - Naming Convention Files Folders
+      - [Naming convention for files and folders](skills/naming-convention-files-folders/SKILL.md)
     - Review Markdown Structure
       - [Review Markdown structure](skills/review-markdown-structure/SKILL.md)
 - Related repositories

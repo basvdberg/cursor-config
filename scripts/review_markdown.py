@@ -22,7 +22,9 @@ STRUCT_END = "<!-- markdown-project-structure:end -->"
 EXCLUDED_FROM_BLOCKS = frozenset({"prompts.md"})
 EXCLUDED_FROM_STRUCTURE_CHECKS = frozenset({"prompts.md"})
 HANDLEBARS_SUFFIX = ".handlebars.md"
-LEGACY_FOLDER_NAMES = frozenset({"Schemas", "Templates", "Extractors", "Data", "Output"})
+sys.path.insert(0, str(SCRIPT_DIR))
+from cursor_config import folder_name_valid  # noqa: E402
+
 KEBAB = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 HEADING = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
 FENCE = re.compile(r"^```")
@@ -128,9 +130,7 @@ def check_naming(path: Path, repo: Path, issues: list[Issue]) -> None:
             Issue("ERROR", path, f"file stem '{stem}' is not kebab-case")
         )
     for part in rel.parent.parts:
-        if part in LEGACY_FOLDER_NAMES:
-            continue
-        if not KEBAB.match(part):
+        if not folder_name_valid(part):
             issues.append(
                 Issue("ERROR", path, f"folder '{part}' is not kebab-case")
             )

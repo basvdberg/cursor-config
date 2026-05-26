@@ -25,23 +25,12 @@ Keep a **Table of contents** near the top of each Markdown file, synced to **`##
 ```markdown
 # Data Engineering 2026
 
-## Table of contents
-
-<!-- markdown-toc:start -->
-- [Purpose](#purpose)
-- [Summary](#summary)
-<!-- markdown-toc:end -->
-
 ## Purpose
 ```
 
 **Wrong** (title must not appear inside the markers):
 
 ```markdown
-<!-- markdown-toc:start -->
-- [Data Engineering 2026](#data-engineering-2026)
-- [Purpose](#purpose)
-<!-- markdown-toc:end -->
 ```
 
 ### 2. Exclude meta sections
@@ -89,3 +78,26 @@ The repository **site map** (linked folders and `.md` files) belongs only in the
 - [ ] **No** `#` document title in the TOC
 - [ ] **No** `Table of contents` or `Project structure` in the TOC
 - [ ] Indents match heading depth
+
+## Project structure
+
+<!-- markdown-project-structure:start -->
+- [cursor-config](../../readme.md)
+  - Githooks
+  - Skills
+    - Create Design Pattern
+      - [Create design pattern](../create-design-pattern/SKILL.md)
+      - [{Title}](../create-design-pattern/TEMPLATE.md)
+    - Markdown Project Structure
+      - [Markdown project structure](../markdown-project-structure/SKILL.md)
+    - Markdown Toc
+      - [Markdown table of contents](SKILL.md)
+    - Naming Convention Files Folders
+      - [Naming convention for files and folders](../naming-convention-files-folders/SKILL.md)
+    - Review Markdown Structure
+      - [Review Markdown structure](../review-markdown-structure/SKILL.md)
+- Related repositories
+  - [Data Engineering 2026](https://github.com/basvdberg/data-engineering-2026)
+  - [Data Engineering Design Patterns](https://github.com/basvdberg/data-engineering-design-patterns)
+  - [Data Solution 2026](https://github.com/basvdberg/data-solution-2026)
+<!-- markdown-project-structure:end -->

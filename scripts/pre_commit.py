@@ -13,7 +13,13 @@ import subprocess
 import sys
 from pathlib import Path
 
-from cursor_config import config_root, git_repo_root, pre_commit_mode
+from cursor_config import (
+    KEBAB_CASE_PATTERN,
+    config_root,
+    folder_name_valid,
+    git_repo_root,
+    pre_commit_mode,
+)
 
 PROJECT_ROOT = git_repo_root()
 CURSOR_CONFIG = config_root(PROJECT_ROOT)
@@ -26,9 +32,6 @@ TOC_START = "<!-- markdown-toc:start -->"
 TOC_END = "<!-- markdown-toc:end -->"
 STRUCT_START = "<!-- markdown-project-structure:start -->"
 STRUCT_END = "<!-- markdown-project-structure:end -->"
-
-KEBAB_CASE_PATTERN = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
-
 
 def get_markdown_files() -> list[Path]:
     files: list[Path] = []
@@ -52,7 +55,7 @@ def check_naming_conventions() -> list[str]:
         if stem != "readme" and not KEBAB_CASE_PATTERN.match(stem):
             errors.append(f"  File does not follow kebab-case: {rel}")
         for part in rel.parent.parts:
-            if not KEBAB_CASE_PATTERN.match(part):
+            if not folder_name_valid(part):
                 errors.append(f"  Folder does not follow kebab-case: {part} (in {rel})")
     if errors:
         seen: set[str] = set()

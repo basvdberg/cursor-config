@@ -4,8 +4,22 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 from pathlib import Path
+
+KEBAB_CASE_PATTERN = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
+LAYER_FOLDER_PATTERN = re.compile(r"^\d{3}_[A-Za-z][a-zA-Z0-9_]*$")
+ACRONYM_FOLDER_PATTERN = re.compile(r"^[A-Z0-9]+$")
+LEGACY_FOLDER_NAMES = frozenset({"Schemas", "Templates", "Extractors", "Data", "Output"})
+
+
+def folder_name_valid(part: str) -> bool:
+    if part in LEGACY_FOLDER_NAMES:
+        return True
+    if LAYER_FOLDER_PATTERN.match(part) or ACRONYM_FOLDER_PATTERN.match(part):
+        return True
+    return bool(KEBAB_CASE_PATTERN.match(part))
 
 CONFIG_DIR_NAME = "cursor-config"
 GIT_CONFIG_KEY = "cursor.configPath"

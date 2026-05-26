@@ -72,3 +72,26 @@ Exit code `1` if any ERROR; `0` if only warnings or clean.
 - `markdown-toc` — regenerate heading TOC
 - `markdown-project-structure` — regenerate site map block
 - Project rule `markdown-folder-kebab-case.mdc` — naming standard
+
+## Project structure
+
+<!-- markdown-project-structure:start -->
+- [cursor-config](../../readme.md)
+  - Githooks
+  - Skills
+    - Create Design Pattern
+      - [Create design pattern](../create-design-pattern/SKILL.md)
+      - [{Title}](../create-design-pattern/TEMPLATE.md)
+    - Markdown Project Structure
+      - [Markdown project structure](../markdown-project-structure/SKILL.md)
+    - Markdown Toc
+      - [Markdown table of contents](../markdown-toc/SKILL.md)
+    - Naming Convention Files Folders
+      - [Naming convention for files and folders](../naming-convention-files-folders/SKILL.md)
+    - Review Markdown Structure
+      - [Review Markdown structure](SKILL.md)
+- Related repositories
+  - [Data Engineering 2026](https://github.com/basvdberg/data-engineering-2026)
+  - [Data Engineering Design Patterns](https://github.com/basvdberg/data-engineering-design-patterns)
+  - [Data Solution 2026](https://github.com/basvdberg/data-solution-2026)
+<!-- markdown-project-structure:end -->
