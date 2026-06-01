@@ -1,0 +1,111 @@
+# BasNAS — how to reach each service (recommended)
+# access_mode:
+#   https_basnas       → https://<host>.basnas/ via nginx-office-c2h (LAN DNS only)
+#   https_office       → https://<host>.office.c2h.nl/ (public DNS; explicit opt-in)
+#   raw_lan_port       → http://<basnas-lan-ip>:<port>
+#   docker_internal    → container DNS only
+
+nginx_upstream: nginx-office-c2h
+
+services:
+  admin-qts:
+    access_mode: https_basnas
+    url: https://admin.basnas/
+    nginx_upstream: https://192.168.2.2:8443
+    until_nginx: https://192.168.2.2:9443/
+    expose: internal
+    notes: >
+      QNAP QTS via NGINX. Use admin.basnas (not bare basnas — conflicts with QNAP hostname).
+      Internal CA cert for *.basnas; see nginx-on-443.md.
+
+  kafka:
+    access_mode: docker_internal
+    reach: kafka:9092
+
+  kafka-ui:
+    access_mode: https_basnas
+    url: https://kafka.basnas/
+    nginx_upstream: kafka-ui:8080
+    until_nginx: http://<basnas-lan-ip>:8085
+    expose: internal
+
+  airflow-standalone:
+    access_mode: https_basnas
+    url: https://airflow.basnas/
+    nginx_upstream: airflow-standalone:8080
+    until_nginx: http://<basnas-lan-ip>:8081
+    expose: internal
+    notes: Open-Meteo and data-solution jobs via DAGs (no separate poller container).
+
+  jobhunter-app:
+    access_mode: https_basnas
+    url: https://jobhunter.basnas/
+    nginx_upstream: jobhunter-app:8080
+    until_nginx: http://<basnas-lan-ip>:8080
+    expose: internal
+
+  immich_server:
+    access_mode: https_basnas
+    url: https://immich.basnas/
+    nginx_upstream: immich_server:2283
+    until_nginx: http://<basnas-lan-ip>:2283
+    expose: internal
+    notes: Set Immich PUBLIC_URL=https://immich.basnas/
+
+  basnas_postgress:
+    access_mode: docker_internal
+    reach: basnas_postgress:5432
+
+  immich_machine_learning:
+    access_mode: docker_internal
+
+  immich_redis:
+    access_mode: docker_internal
+    reach: immich_redis:6379
+
+  plex:
+    access_mode: https_basnas
+    url: https://plex.basnas/
+    nginx_upstream: plex:32400
+    until_nginx: http://<basnas-lan-ip>:32400
+    expose: internal
+    status: planned
+
+  qbittorrent-1:
+    access_mode: https_basnas
+    url: https://qbittorrent.basnas/
+    nginx_upstream: qbittorrent-1:8080
+    until_nginx: http://<basnas-lan-ip>:32772
+    expose: internal
+    status: stopped
+    notes: Port 32769 conflicts with radarr-3; fix host mapping before start
+
+  radarr-3:
+    access_mode: https_basnas
+    url: https://radarr.basnas/
+    nginx_upstream: radarr-3:7878
+    until_nginx: http://<basnas-lan-ip>:32768
+    expose: internal
+
+  nzbget-2:
+    access_mode: https_basnas
+    url: https://nzbget.basnas/
+    nginx_upstream: nzbget-2:6789
+    until_nginx: http://<basnas-lan-ip>:32770
+    expose: internal
+
+  homebridge-2:
+    access_mode: https_basnas
+    url: https://homebridge.basnas/
+    nginx_upstream: 192.168.2.36:8581
+    expose: internal
+    notes: qnet-static container IP; not Docker DNS
+
+  adguard-home:
+    access_mode: https_basnas
+    url: https://adguard.basnas/
+    expose: internal
+    status: planned
+    notes: LAN DNS for *.basnas
+
+public_office_zone: []

@@ -1,0 +1,25 @@
+# /volume1/docker/services/<application>/docker-compose.yml
+# Replace <application>, ports, image, and paths.
+
+services:
+  <application>:
+    image: ghcr.io/example/<application>:latest
+    container_name: <application>
+    restart: unless-stopped
+    env_file:
+      - .env
+    # Prefer no published ports: NGINX reaches app on basnas-internal by service name.
+    # If you must publish for debugging: fixed host port only, bind to LAN IP or 127.0.0.1
+    # ports:
+    #   - "127.0.0.1:<host_port>:<container_port>"
+    volumes:
+      # REQUIRED: NAS share bind-mount (accessible outside the container)
+      - /volume1/docker/shares/<application>:/data:rw
+      # Optional: extra config from share
+      - /volume1/docker/shares/<application>/config:/app/config:ro
+    networks:
+      - basnas-internal
+
+networks:
+  basnas-internal:
+    external: true

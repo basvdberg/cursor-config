@@ -1,3 +1,14 @@
+## Table of contents
+
+<!-- markdown-toc:start -->
+- [Goal](#goal)
+- [Checks](#checks)
+- [Run the reviewer](#run-the-reviewer)
+- [Agent workflow](#agent-workflow)
+- [Report format](#report-format)
+- [Related skills](#related-skills)
+<!-- markdown-toc:end -->
+
 ---
 name: review-markdown-structure
 description: >-
@@ -79,9 +90,20 @@ Exit code `1` if any ERROR; `0` if only warnings or clean.
 - [cursor-config](../../readme.md)
   - Githooks
   - Skills
+    - Browser Bookmarks Sync
+      - [Browser bookmarks sync](../browser-bookmarks-sync/SKILL.md)
     - Create Design Pattern
       - [Create design pattern](../create-design-pattern/SKILL.md)
       - [{Title}](../create-design-pattern/TEMPLATE.md)
+    - Deploy Basnas Container
+      - Templates
+      - [Fix `admin.basnas` not resolving](../deploy-basnas-container/dns-basnas-setup.md)
+      - [Examples](../deploy-basnas-container/examples.md)
+      - [NGINX as HTTPS edge on port 443 (BasNAS / QNAP)](../deploy-basnas-container/nginx-on-443.md)
+      - [BasNAS deployment reference](../deploy-basnas-container/reference.md)
+      - [Deploy container service on BasNAS](../deploy-basnas-container/SKILL.md)
+      - [Troubleshooting “Your connection is not private” (*.basnas)](../deploy-basnas-container/troubleshooting-tls.md)
+      - [BasNAS URL map](../deploy-basnas-container/url-map.md)
     - Markdown Project Structure
       - [Markdown project structure](../markdown-project-structure/SKILL.md)
     - Markdown Toc
@@ -91,6 +113,7 @@ Exit code `1` if any ERROR; `0` if only warnings or clean.
     - Review Markdown Structure
       - [Review Markdown structure](SKILL.md)
 - Related repositories
+  - [Browser bookmarks sync](https://github.com/basvdberg/browser-bookmarks-sync)
   - [Data Engineering 2026](https://github.com/basvdberg/data-engineering-2026)
   - [Data Engineering Design Patterns](https://github.com/basvdberg/data-engineering-design-patterns)
   - [Data Solution 2026](https://github.com/basvdberg/data-solution-2026)

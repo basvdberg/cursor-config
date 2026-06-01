@@ -1,3 +1,16 @@
+## Table of contents
+
+<!-- markdown-toc:start -->
+- [Goal](#goal)
+- [GitHub baseline (most common)](#github-baseline-most-common)
+- [Your rules (apply on every new name)](#your-rules-apply-on-every-new-name)
+- [Decision checklist](#decision-checklist)
+- [Examples](#examples)
+- [Layer and technical exceptions](#layer-and-technical-exceptions)
+- [Agent workflow](#agent-workflow)
+- [Related skills](#related-skills)
+<!-- markdown-toc:end -->
+
 ---
 name: naming-convention-files-folders
 description: >-
@@ -95,9 +108,20 @@ When a repo uses a **documented override**, follow that repo’s `Conventions` o
 - [cursor-config](../../readme.md)
   - Githooks
   - Skills
+    - Browser Bookmarks Sync
+      - [Browser bookmarks sync](../browser-bookmarks-sync/SKILL.md)
     - Create Design Pattern
       - [Create design pattern](../create-design-pattern/SKILL.md)
       - [{Title}](../create-design-pattern/TEMPLATE.md)
+    - Deploy Basnas Container
+      - Templates
+      - [Fix `admin.basnas` not resolving](../deploy-basnas-container/dns-basnas-setup.md)
+      - [Examples](../deploy-basnas-container/examples.md)
+      - [NGINX as HTTPS edge on port 443 (BasNAS / QNAP)](../deploy-basnas-container/nginx-on-443.md)
+      - [BasNAS deployment reference](../deploy-basnas-container/reference.md)
+      - [Deploy container service on BasNAS](../deploy-basnas-container/SKILL.md)
+      - [Troubleshooting “Your connection is not private” (*.basnas)](../deploy-basnas-container/troubleshooting-tls.md)
+      - [BasNAS URL map](../deploy-basnas-container/url-map.md)
     - Markdown Project Structure
       - [Markdown project structure](../markdown-project-structure/SKILL.md)
     - Markdown Toc
@@ -107,6 +131,7 @@ When a repo uses a **documented override**, follow that repo’s `Conventions` o
     - Review Markdown Structure
       - [Review Markdown structure](../review-markdown-structure/SKILL.md)
 - Related repositories
+  - [Browser bookmarks sync](https://github.com/basvdberg/browser-bookmarks-sync)
   - [Data Engineering 2026](https://github.com/basvdberg/data-engineering-2026)
   - [Data Engineering Design Patterns](https://github.com/basvdberg/data-engineering-design-patterns)
   - [Data Solution 2026](https://github.com/basvdberg/data-solution-2026)

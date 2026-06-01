@@ -1,0 +1,10 @@
+{
+  "bookmarksRepo": "../browser-bookmarks-sync",
+  "mergedHtml": "bookmarks/merged-bookmarks.html",
+  "mergeMeta": "bookmarks/merge-meta.json",
+  "serviceUrlMap": "skills/deploy-basnas-container/service-url-map.yaml",
+  "chromeBookmarks": "%LOCALAPPDATA%/Google/Chrome/User Data/Default/Bookmarks",
+  "braveBookmarks": "%LOCALAPPDATA%/BraveSoftware/Brave-Browser/User Data/Default/Bookmarks",
+  "floccusHtmlPath": "bookmarks/merged-bookmarks.html",
+  "githubRepo": "basvdberg/browser-bookmarks-sync"
+}

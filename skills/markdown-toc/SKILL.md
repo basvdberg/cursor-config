@@ -1,3 +1,17 @@
+## Table of contents
+
+<!-- markdown-toc:start -->
+- [Goal](#goal)
+- [Rules (mandatory)](#rules-mandatory)
+  - [1. Exclude the document title (h1)](#1-exclude-the-document-title-h1)
+  - [2. Exclude meta sections](#2-exclude-meta-sections)
+  - [3. Formatting](#3-formatting)
+- [Run the updater](#run-the-updater)
+- [Agent workflow](#agent-workflow)
+- [Site map vs table of contents](#site-map-vs-table-of-contents)
+- [Checklist](#checklist)
+<!-- markdown-toc:end -->
+
 ---
 name: markdown-toc
 description: >-
@@ -85,9 +99,20 @@ The repository **site map** (linked folders and `.md` files) belongs only in the
 - [cursor-config](../../readme.md)
   - Githooks
   - Skills
+    - Browser Bookmarks Sync
+      - [Browser bookmarks sync](../browser-bookmarks-sync/SKILL.md)
     - Create Design Pattern
       - [Create design pattern](../create-design-pattern/SKILL.md)
       - [{Title}](../create-design-pattern/TEMPLATE.md)
+    - Deploy Basnas Container
+      - Templates
+      - [Fix `admin.basnas` not resolving](../deploy-basnas-container/dns-basnas-setup.md)
+      - [Examples](../deploy-basnas-container/examples.md)
+      - [NGINX as HTTPS edge on port 443 (BasNAS / QNAP)](../deploy-basnas-container/nginx-on-443.md)
+      - [BasNAS deployment reference](../deploy-basnas-container/reference.md)
+      - [Deploy container service on BasNAS](../deploy-basnas-container/SKILL.md)
+      - [Troubleshooting “Your connection is not private” (*.basnas)](../deploy-basnas-container/troubleshooting-tls.md)
+      - [BasNAS URL map](../deploy-basnas-container/url-map.md)
     - Markdown Project Structure
       - [Markdown project structure](../markdown-project-structure/SKILL.md)
     - Markdown Toc
@@ -97,6 +122,7 @@ The repository **site map** (linked folders and `.md` files) belongs only in the
     - Review Markdown Structure
       - [Review Markdown structure](../review-markdown-structure/SKILL.md)
 - Related repositories
+  - [Browser bookmarks sync](https://github.com/basvdberg/browser-bookmarks-sync)
   - [Data Engineering 2026](https://github.com/basvdberg/data-engineering-2026)
   - [Data Engineering Design Patterns](https://github.com/basvdberg/data-engineering-design-patterns)
   - [Data Solution 2026](https://github.com/basvdberg/data-solution-2026)
