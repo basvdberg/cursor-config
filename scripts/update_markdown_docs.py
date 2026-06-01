@@ -34,6 +34,15 @@ REPO_LABEL_OVERRIDES = {
     "data-engineering-design-patterns": "Data Engineering Design Patterns",
 }
 
+PRIVATE_RELATED_REPOS = frozenset({"browser-bookmarks-sync"})
+
+REPO_DESCRIPTION_OVERRIDES = {
+    "browser-bookmarks-sync": "Floccus bookmark sync target",
+    "data-engineering-2026": "Course and learning materials",
+    "data-engineering-design-patterns": "Design pattern catalogue",
+    "data-solution-2026": "Data solution proof of concept",
+}
+
 TOC_START = "<!-- markdown-toc:start -->"
 TOC_END = "<!-- markdown-toc:end -->"
 STRUCT_START = "<!-- markdown-project-structure:start -->"
@@ -485,19 +494,21 @@ def sibling_git_repos(repo_root: Path) -> list[Path]:
 
 def load_external_repo_overrides(
     repo_root: Path,
-) -> tuple[str, dict[str, str], dict[str, str]]:
-    """Optional section title, display labels, and URLs from project-structure-external.json."""
+) -> tuple[str, dict[str, str], dict[str, str], set[str], dict[str, str]]:
+    """Section title, labels, URLs, private slugs, and short descriptions from external JSON."""
     section = "Related repositories"
     labels: dict[str, str] = {}
     urls: dict[str, str] = {}
+    private_slugs: set[str] = set(PRIVATE_RELATED_REPOS)
+    descriptions: dict[str, str] = dict(REPO_DESCRIPTION_OVERRIDES)
     path = repo_root / EXTERNAL_REPOS_FILE
     if not path.is_file():
-        return section, labels, urls
+        return section, labels, urls, private_slugs, descriptions
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
         print(f"warning: invalid {EXTERNAL_REPOS_FILE}: {exc}", file=sys.stderr)
-        return section, labels, urls
+        return section, labels, urls, private_slugs, descriptions
     if isinstance(data, dict):
         if data.get("section"):
             section = str(data["section"]).strip()
@@ -505,6 +516,22 @@ def load_external_repo_overrides(
             raw = data.get(key)
             if isinstance(raw, dict):
                 labels.update({str(k).lower(): str(v).strip() for k, v in raw.items()})
+        raw_private = data.get("private")
+        if isinstance(raw_private, list):
+            private_slugs.update(
+                slug
+                for item in raw_private
+                if (slug := normalize_github_repo_slug(str(item)))
+            )
+        raw_descriptions = data.get("descriptions")
+        if isinstance(raw_descriptions, dict):
+            descriptions.update(
+                {
+                    str(k).lower(): str(v).strip()
+                    for k, v in raw_descriptions.items()
+                    if str(v).strip()
+                }
+            )
         items = data.get("repositories", data.get("repos", []))
         if isinstance(items, list):
             for item in items:
@@ -512,24 +539,44 @@ def load_external_repo_overrides(
                     continue
                 label = str(item.get("label", "")).strip()
                 url = str(item.get("url", "")).strip()
-                if not url:
+                raw_slug = str(item.get("slug", "")).strip()
+                is_private = bool(item.get("private"))
+                description = str(item.get("description", "")).strip()
+                slug: str | None = None
+                if url:
+                    match = GITHUB_REPO_RE.search(url)
+                    slug = normalize_github_repo_slug(match.group(2)) if match else None
+                elif raw_slug:
+                    slug = normalize_github_repo_slug(raw_slug)
+                if not slug:
                     continue
-                match = GITHUB_REPO_RE.search(url)
-                slug = normalize_github_repo_slug(match.group(2)) if match else None
-                if slug:
-                    if label:
-                        labels[slug] = label
+                if label:
+                    labels[slug] = label
+                if description:
+                    descriptions[slug] = description
+                if is_private:
+                    private_slugs.add(slug)
+                elif url:
                     urls[slug] = url.split("?")[0].rstrip("/")
-    return section, labels, urls
+    return section, labels, urls, private_slugs, descriptions
 
 
-def discover_related_github_repositories(repo_root: Path) -> tuple[str, list[tuple[str, str]]]:
+def format_related_repo_line(*, label: str, url: str, description: str) -> str:
+    suffix = f" — {description}" if description else ""
+    return f"  - [{label}]({url}){suffix}"
+
+
+def discover_related_github_repositories(
+    repo_root: Path,
+) -> tuple[str, list[tuple[str, str, str]]]:
     """
     Find GitHub repos with incoming or outgoing markdown links relative to this repo.
     Only these are listed as flat links; the current repo is expanded separately.
     """
     owner, current_slug = git_repo_identity(repo_root)
-    section, label_overrides, url_overrides = load_external_repo_overrides(repo_root)
+    section, label_overrides, url_overrides, private_slugs, descriptions = (
+        load_external_repo_overrides(repo_root)
+    )
 
     outgoing = scan_github_repo_refs_in_files(
         _markdown_files_under(repo_root), owner_filter=owner
@@ -540,13 +587,22 @@ def discover_related_github_repositories(repo_root: Path) -> tuple[str, list[tup
         sibling_git_repos(repo_root), owner=owner, target_slug=current_slug
     )
 
-    related_slugs = (outgoing | incoming) - {current_slug} - EXCLUDED_RELATED_REPOS
+    related_slugs = (
+        (outgoing | incoming) - {current_slug} - EXCLUDED_RELATED_REPOS - private_slugs
+    )
 
-    entries: list[tuple[str, str]] = []
+    entries: list[tuple[str, str, str]] = []
     for slug in sorted(related_slugs):
         label = repo_display_name(slug, label_overrides)
+        description = descriptions.get(slug, "").strip()
+        if not description:
+            print(
+                f"warning: no short description for related repo {slug!r}; "
+                f"add to {EXTERNAL_REPOS_FILE} descriptions",
+                file=sys.stderr,
+            )
         url = url_overrides.get(slug) or github_repo_url(owner, slug)
-        entries.append((label, url))
+        entries.append((label, url, description))
     return section, entries
 
 
@@ -556,8 +612,10 @@ def append_related_repositories(lines: list[str], repo_root: Path) -> None:
     if not related:
         return
     lines.append(f"- {section}")
-    for label, url in related:
-        lines.append(f"  - [{label}]({url})")
+    for label, url, description in related:
+        lines.append(
+            format_related_repo_line(label=label, url=url, description=description)
+        )
 
 
 def build_project_structure(repo_root: Path, from_file: Path | None = None) -> str:

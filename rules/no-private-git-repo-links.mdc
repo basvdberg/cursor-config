@@ -37,4 +37,4 @@ Browser bookmarks sync
 [Data Engineering 2026](https://github.com/basvdberg/data-engineering-2026)
 ```
 
-When updating **Related repositories** sections or `project-structure-external.json`, list private repos by label only—no `url` field for private repositories.
+When updating **Related repositories** in project structure blocks or `project-structure-external.json`, **omit** private repositories entirely (use `"private": ["repo-slug"]` to exclude them from auto-generated lists).
