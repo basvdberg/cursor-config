@@ -90,6 +90,8 @@ Reload: `docker exec nginx-office-c2h nginx -t && docker exec nginx-office-c2h n
 
 **Bulk deploy** all `https_basnas` services: copy [scripts/deploy-all-basnas-vhosts.sh](scripts/deploy-all-basnas-vhosts.sh) to BasNAS, `sed -i 's/\r$//'`, run it, then `scripts/patch-bridge-upstreams.sh` if radarr/nzbget upstreams change after container recreate.
 
+**Windows TLS name check:** use explicit SANs per hostname (not only `*.basnas`). After adding apps, run [scripts/reissue-basnas-cert.sh](scripts/reissue-basnas-cert.sh) on BasNAS.
+
 ### Step 7: LAN DNS
 
 ```text

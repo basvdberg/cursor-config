@@ -81,5 +81,10 @@ def load_browser_urls(path: Path) -> list[tuple[str, str, str]]:
             status = m.group(1)
 
     flush()
-    entries.sort(key=lambda item: item[1].casefold())
+
+    def sort_key(item: tuple[str, str, str]) -> tuple[int, str]:
+        service_id, title, _url = item
+        return (0 if service_id == "admin-qts" else 1, title.casefold())
+
+    entries.sort(key=sort_key)
     return entries

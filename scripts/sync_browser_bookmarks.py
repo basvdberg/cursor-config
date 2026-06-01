@@ -16,9 +16,15 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
+from basnas_bookmark_icons import icon_cache_dir, icon_data_uri  # noqa: E402
 from merge_chromium_bookmarks import merge_profiles  # noqa: E402
 from service_url_map import load_browser_urls  # noqa: E402
 BASNAS_MARKERS = ("<!-- cursor-config:basnas:start -->", "<!-- cursor-config:basnas:end -->")
+BASNAS_MANAGED_FOLDER_RE = re.compile(
+    r"<DT><H3[^>]*>\s*(?:basnas|BasNAS)\s*</H3>\s*<DL><p>(.*?)</DL><p>",
+    re.DOTALL | re.IGNORECASE,
+)
+BASNAS_LINK_RE = re.compile(r'<DT><A HREF="([^"]*)"', re.IGNORECASE)
 CONFIG_NAME = "browser-bookmarks-sync.json"
 
 
@@ -44,19 +50,37 @@ def load_config() -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def basnas_folder_html(entries: list[tuple[str, str, str]]) -> str:
+def basnas_folder_html(
+    entries: list[tuple[str, str, str]],
+    icons: dict[str, str] | None = None,
+) -> str:
     lines = [
-        "    <!-- cursor-config:basnas:start -->",
-        '    <DT><H3 ADD_DATE="0">BasNAS</H3>',
-        "    <DL><p>",
+        "<!-- cursor-config:basnas:start -->",
+        '<DT><H3 ADD_DATE="0">BasNAS</H3>',
+        "<DL><p>",
     ]
-    for _service_id, title, url in entries:
+    icons = icons or {}
+    for service_id, title, url in entries:
         safe_url = html.escape(url, quote=True)
         safe_title = html.escape(title)
-        lines.append(f'      <DT><A HREF="{safe_url}" ADD_DATE="0">{safe_title}</A>')
-    lines.append("    </DL><p>")
-    lines.append("    <!-- cursor-config:basnas:end -->")
+        icon = icons.get(service_id)
+        if icon:
+            safe_icon = html.escape(icon, quote=True)
+            lines.append(
+                f'  <DT><A HREF="{safe_url}" ADD_DATE="0" ICON="{safe_icon}">{safe_title}</A>'
+            )
+        else:
+            lines.append(f'  <DT><A HREF="{safe_url}" ADD_DATE="0">{safe_title}</A>')
+    lines.append("</DL><p>")
+    lines.append("<!-- cursor-config:basnas:end -->")
     return "\n".join(lines) + "\n"
+
+
+def _is_managed_basnas_folder(inner: str) -> bool:
+    links = BASNAS_LINK_RE.findall(inner)
+    if not links:
+        return False
+    return all(".basnas/" in u.casefold() for u in links)
 
 
 def inject_basnas_block(html_text: str, block: str) -> str:
@@ -67,6 +91,16 @@ def inject_basnas_block(html_text: str, block: str) -> str:
             re.DOTALL,
         )
         return pattern.sub(block, html_text)
+
+    def replace_managed_folder(match: re.Match[str]) -> str:
+        inner = match.group(1)
+        if _is_managed_basnas_folder(inner):
+            return block.rstrip("\n")
+        return match.group(0)
+
+    updated, count = BASNAS_MANAGED_FOLDER_RE.subn(replace_managed_folder, html_text, count=1)
+    if count:
+        return updated
 
     # Insert before "Other bookmarks" root section when markers are absent.
     anchor = '  <DT><H3 PERSONAL_TOOLBAR_FOLDER="true">Other bookmarks</H3>'
@@ -154,7 +188,13 @@ def main() -> int:
             print(f"error: missing {service_map}", file=sys.stderr)
             return 1
         entries = load_browser_urls(service_map)
-        block = basnas_folder_html(entries)
+        cache = icon_cache_dir(bookmarks_repo)
+        icons: dict[str, str] = {}
+        for service_id, _title, _url in entries:
+            uri = icon_data_uri(service_id, cache)
+            if uri:
+                icons[service_id] = uri
+        block = basnas_folder_html(entries, icons)
         html_text = merged_html.read_text(encoding="utf-8")
         updated = inject_basnas_block(html_text, block)
         merged_html.write_text(updated, encoding="utf-8")

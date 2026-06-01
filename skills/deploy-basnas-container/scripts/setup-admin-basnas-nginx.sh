@@ -38,8 +38,17 @@ CN = BasNAS Internal
 subjectAltName = @alt
 [alt]
 DNS.1 = basnas
-DNS.2 = *.basnas
-DNS.3 = admin.basnas
+DNS.2 = admin.basnas
+DNS.3 = airflow.basnas
+DNS.4 = immich.basnas
+DNS.5 = kafka.basnas
+DNS.6 = jobhunter.basnas
+DNS.7 = radarr.basnas
+DNS.8 = nzbget.basnas
+DNS.9 = qbittorrent.basnas
+DNS.10 = homebridge.basnas
+DNS.11 = plex.basnas
+DNS.12 = adguard.basnas
 EOF
   openssl req -new -key "$CERT_DIR/privkey.pem" -out /tmp/basnas.csr -config /tmp/basnas-openssl.cnf
   openssl x509 -req -in /tmp/basnas.csr -CA "$CA_CRT" -CAkey "$CA_KEY" -CAcreateserial \

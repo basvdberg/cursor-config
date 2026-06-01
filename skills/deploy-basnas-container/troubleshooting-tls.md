@@ -23,7 +23,8 @@ Browser TLS errors are **not** SSH-related. They mean the **HTTPS certificate** 
 
 3. **admin.basnas hangs** — Upstream was `:8080` (jobhunter). QTS is **`https://192.168.2.2:8443`** from inside the NGINX container (`proxy_ssl_verify off`). Run `scripts/fix-admin-basnas-upstream.sh`.
 4. **No vhost** — no `server_name app.basnas` in NGINX.
-5. **Untrusted cert** — internal CA root not installed on your PC, or cert lacks `*.basnas` SAN.
+5. **Untrusted cert** — internal CA root not installed on your PC ([install-windows-basnas-ca.ps1](scripts/install-windows-basnas-ca.ps1)).
+6. **Windows name mismatch** — Schannel rejects wildcard-only `*.basnas` for `airflow.basnas` etc. Re-issue with explicit SANs: [reissue-basnas-cert.sh](scripts/reissue-basnas-cert.sh).
 
 ## Fix order
 
@@ -66,6 +67,14 @@ Let's Encrypt cannot issue for `.basnas`. `curl` on Windows may still report rev
 ```bash
 docker exec nginx-office-c2h nginx -t
 docker exec nginx-office-c2h nginx -s reload
+```
+
+### 5. Re-issue cert (Windows `SEC_E_WRONG_PRINCIPAL`)
+
+If browsers or `curl` fail with *target principal name is incorrect* but `-k` works, the leaf cert likely has only `*.basnas`. On BasNAS:
+
+```bash
+sed -i 's/\r$//' reissue-basnas-cert.sh && ./reissue-basnas-cert.sh
 ```
 
 ## Verify
