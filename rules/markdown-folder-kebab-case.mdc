@@ -17,7 +17,8 @@ Use `kebab-case` for all newly created or renamed folders and markdown files in 
 
 - `design-patterns`
 - `event-based-orchestration.md`
-- `object-property-tree.md`
+- `data-object-tree.md`
+- `data-object-tree-property-inheritance.md`
 - `historic-bitemporal-table.md`
 
 ## Invalid examples
