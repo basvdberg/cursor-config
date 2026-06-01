@@ -16,7 +16,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from basnas_bookmark_icons import icon_cache_dir, icon_data_uri  # noqa: E402
+from basnas_bookmark_icons import icon_cache_dir, icon_data_uri, icon_png_bytes  # noqa: E402
 from merge_chromium_bookmarks import merge_profiles  # noqa: E402
 from service_url_map import load_browser_urls  # noqa: E402
 BASNAS_MARKERS = ("<!-- cursor-config:basnas:start -->", "<!-- cursor-config:basnas:end -->")
@@ -50,16 +50,36 @@ def load_config() -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def basnas_folder_html(
-    entries: list[tuple[str, str, str]],
-    icons: dict[str, str] | None = None,
-) -> str:
+def basnas_folder_html(entries: list[tuple[str, str, str]]) -> str:
+    """Floccus Git sync only keeps title + URL; favicons need apply_chromium_favicons.py."""
     lines = [
         "<!-- cursor-config:basnas:start -->",
         '<DT><H3 ADD_DATE="0">BasNAS</H3>',
         "<DL><p>",
     ]
-    icons = icons or {}
+    for _service_id, title, url in entries:
+        safe_url = html.escape(url, quote=True)
+        safe_title = html.escape(title)
+        lines.append(f'  <DT><A HREF="{safe_url}" ADD_DATE="0">{safe_title}</A>')
+    lines.append("</DL><p>")
+    lines.append("<!-- cursor-config:basnas:end -->")
+    return "\n".join(lines) + "\n"
+
+
+def basnas_favicon_import_html(
+    entries: list[tuple[str, str, str]],
+    icons: dict[str, str],
+) -> str:
+    """Optional Chrome import file (Bookmark Manager → Import). Floccus ignores ICON."""
+    lines = [
+        "<!DOCTYPE NETSCAPE-Bookmark-file-1>",
+        '<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">',
+        "<TITLE>BasNAS favicons</TITLE>",
+        "<H1>BasNAS favicons</H1>",
+        "<DL><p>",
+        '<DT><H3 ADD_DATE="0">BasNAS favicons (import then delete this folder)</H3>',
+        "<DL><p>",
+    ]
     for service_id, title, url in entries:
         safe_url = html.escape(url, quote=True)
         safe_title = html.escape(title)
@@ -67,12 +87,11 @@ def basnas_folder_html(
         if icon:
             safe_icon = html.escape(icon, quote=True)
             lines.append(
-                f'  <DT><A HREF="{safe_url}" ADD_DATE="0" ICON="{safe_icon}">{safe_title}</A>'
+                f'<DT><A HREF="{safe_url}" ADD_DATE="0" ICON="{safe_icon}">{safe_title}</A>'
             )
         else:
-            lines.append(f'  <DT><A HREF="{safe_url}" ADD_DATE="0">{safe_title}</A>')
-    lines.append("</DL><p>")
-    lines.append("<!-- cursor-config:basnas:end -->")
+            lines.append(f'<DT><A HREF="{safe_url}" ADD_DATE="0">{safe_title}</A>')
+    lines.extend(["</DL><p>", "</DL><p>"])
     return "\n".join(lines) + "\n"
 
 
@@ -141,12 +160,17 @@ def main() -> int:
         action="store_true",
         help="Refresh BasNAS folder from service-url-map.yaml",
     )
+    parser.add_argument(
+        "--apply-favicons",
+        action="store_true",
+        help="Inject BasNAS icons into Chrome/Brave Favicons DB (close browsers first)",
+    )
     parser.add_argument("--commit", action="store_true", help="Git commit in bookmarks repo")
     parser.add_argument("--push", action="store_true", help="Git push after commit")
     parser.add_argument("--dry-run", action="store_true", help="Print actions only")
     args = parser.parse_args()
 
-    if not args.merge and not args.basnas:
+    if not args.merge and not args.basnas and not args.apply_favicons:
         args.merge = args.basnas = True
 
     cfg = load_config()
@@ -191,15 +215,27 @@ def main() -> int:
         cache = icon_cache_dir(bookmarks_repo)
         icons: dict[str, str] = {}
         for service_id, _title, _url in entries:
+            icon_png_bytes(service_id, cache, refresh=True)
             uri = icon_data_uri(service_id, cache)
             if uri:
                 icons[service_id] = uri
-        block = basnas_folder_html(entries, icons)
+        block = basnas_folder_html(entries)
         html_text = merged_html.read_text(encoding="utf-8")
         updated = inject_basnas_block(html_text, block)
         merged_html.write_text(updated, encoding="utf-8")
+        import_html = expand_path("bookmarks/basnas-favicon-import.html", bookmarks_repo)
+        import_html.write_text(basnas_favicon_import_html(entries, icons), encoding="utf-8")
         print(f"Updated BasNAS folder ({len(entries)} links) in {merged_html}")
+        print(f"Wrote favicon import helper: {import_html}")
+        print("Floccus does not sync ICON attributes — run with --apply-favicons after closing Chrome/Brave.")
         changed = True
+
+    if args.apply_favicons:
+        from apply_chromium_favicons import run as apply_favicons  # noqa: E402
+
+        rc = apply_favicons()
+        if rc != 0:
+            return rc
 
     if args.commit and changed:
         msg = "Sync bookmarks"

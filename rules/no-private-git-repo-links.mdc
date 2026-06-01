@@ -1,0 +1,40 @@
+---
+description: Do not link to private Git repositories in docs or agent output
+alwaysApply: true
+---
+
+# No links to private Git repositories
+
+Do not add markdown links, bare URLs, or clickable references to **private** Git hosting URLs (GitHub, GitLab, Bitbucket, Azure DevOps, etc.) in documentation, skills, rules, comments, or chat replies.
+
+Readers without access get broken links; private URLs also leak org/repo structure.
+
+## What counts as private
+
+- Repositories marked private on the host, or known to be private in this workspace
+- Any repo you are not certain is **public** — treat as private and do not link
+
+Known private repo in this workspace: **browser-bookmarks-sync** (`basvdberg/browser-bookmarks-sync`).
+
+## Instead of a URL
+
+| Situation | Do this |
+|-----------|---------|
+| Repo is private | Specify name only |
+| Repo is public | Full `https://` link is fine |
+| User needs the remote | Say they can open it in Git or their IDE; do not paste the private URL unless they explicitly ask |
+
+## Examples
+
+```markdown
+<!-- BAD: private repo with clickable link -->
+[Browser bookmarks sync](https://github.com/basvdberg/browser-bookmarks-sync)
+
+<!-- GOOD: name only -->
+Browser bookmarks sync
+
+<!-- GOOD: public repo -->
+[Data Engineering 2026](https://github.com/basvdberg/data-engineering-2026)
+```
+
+When updating **Related repositories** sections or `project-structure-external.json`, list private repos by label only—no `url` field for private repositories.

@@ -50,7 +50,8 @@ Keep a **Table of contents** near the top of each Markdown file, synced to **`##
 ### 2. Exclude meta sections
 
 - Do **not** list `## Table of contents` or `## Project structure` in the TOC.
-- The first TOC entry is the first real content section (e.g. `## Purpose`).
+- **Do** list `## Design patterns` when present (first body section on architecture/design docs under `doc/design/`).
+- The first TOC entry is the first real content section (e.g. `## Purpose` or `## Design patterns`).
 
 ### 3. Formatting
 
@@ -77,7 +78,7 @@ Run from the consumer Git repository root.
 
 ## Agent workflow
 
-1. Keep exactly one `#` title at the top, then `## Table of contents`, then the body.
+1. Keep exactly one `#` title at the top, then `## Table of contents`, then `## Design patterns` when the doc is under `doc/design/`, then the rest of the body.
 2. **Do not hand-edit** the list between `markdown-toc:start` and `markdown-toc:end`.
 3. Run `--toc-only` after heading changes.
 4. Verify: open the TOC block and confirm **no** line matches the `#` title and **no** `Table of contents` / `Project structure` entries.

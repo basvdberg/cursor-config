@@ -1,0 +1,38 @@
+---
+description: TOC generation rules for markdown files
+globs: **/*.md
+alwaysApply: false
+---
+
+# Markdown TOC Generation
+
+When generating or updating a table of contents (TOC) in a markdown file:
+
+- Do NOT include the document title (h1 heading) in the TOC entries.
+- Do NOT include a self-referencing "Table of contents" entry.
+- Start the TOC at the first h2 section below the title.
+
+Example — given this document structure:
+
+```markdown
+# My Document Title
+
+## Table of contents
+<!-- markdown-toc:start -->
+...
+<!-- markdown-toc:end -->
+
+## First Section
+### Subsection A
+## Second Section
+```
+
+The TOC should be:
+
+```markdown
+<!-- markdown-toc:start -->
+- [First Section](#first-section)
+  - [Subsection A](#subsection-a)
+- [Second Section](#second-section)
+<!-- markdown-toc:end -->
+```

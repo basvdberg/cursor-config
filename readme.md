@@ -6,14 +6,14 @@
 - [Layout](#layout)
 - [One-time setup](#one-time-setup)
   - [1. Clone beside your projects](#1-clone-beside-your-projects)
-  - [2. Install skills for Cursor](#2-install-skills-for-cursor)
+  - [2. Install Cursor skills](#2-install-cursor-skills)
   - [3. Enable Git hooks in each consumer repo](#3-enable-git-hooks-in-each-consumer-repo)
 - [Manual commands](#manual-commands)
 - [Environment](#environment)
 - [Related repositories](#related-repositories)
 <!-- markdown-toc:end -->
 
-Versioned Cursor automation for the Data Engineering workspace: Markdown TOC/structure updaters, `prompts.md` generation, Git pre-commit hooks, and agent skills.
+Versioned Cursor automation for the Data Engineering workspace: agent rules, skills, Markdown TOC/structure updaters, `prompts.md` generation, and Git pre-commit hooks.
 
 Repository: [github.com/basvdberg/cursor-config](https://github.com/basvdberg/cursor-config) (push this folder after clone).
 
@@ -21,9 +21,10 @@ Repository: [github.com/basvdberg/cursor-config](https://github.com/basvdberg/cu
 
 | Path | Purpose |
 |------|---------|
-| `scripts/` | Python tools (`update_markdown_docs.py`, `update_prompts.py`, `pre_commit.py`, `review_markdown.py`) |
+| `rules/` | Shared Cursor rules (`.mdc`); single copy only—no per-repo `.cursor/rules` |
+| `scripts/` | Python tools and install scripts (`install-cursor.ps1`, `update_markdown_docs.py`, …) |
 | `githooks/` | Shared `pre-commit` hook used by consumer repos |
-| `skills/` | Cursor agent skills (`markdown-toc`, `markdown-project-structure`, `review-markdown-structure`, `deploy-basnas-container`, `browser-bookmarks-sync`, …) |
+| `skills/` | Cursor agent skills (`markdown-toc`, `pretty-color-logging`, `deploy-basnas-container`, …) |
 | `browser-bookmarks-sync.json` | Paths to Chrome/Brave profiles and the Floccus Git repo |
 
 Consumer repositories keep repo-specific files only, for example `project-structure-external.json` and `project-structure-descriptions.json` at their own roots.
@@ -41,13 +42,19 @@ Data Engineering 2.0/
   data-engineering-design-patterns/
 ```
 
-### 2. Install skills for Cursor
+### 2. Install Cursor skills
+
+From this repository:
 
 ```powershell
-.\scripts\install-skills.ps1
+.\scripts\install-cursor.ps1
 ```
 
-Links each skill under `%USERPROFILE%\.cursor\skills\` to this repository.
+Links each skill under `%USERPROFILE%\.cursor\skills\` to `skills/` in this repo.
+
+**Rules** stay in `cursor-config/rules/` only. Do not add `.cursor/rules` in consumer repositories. Open the parent workspace (or add the `cursor-config` folder to your Cursor workspace) so agents resolve shared rules from this path.
+
+Re-run after adding a new skill.
 
 ### 3. Enable Git hooks in each consumer repo
 
@@ -113,6 +120,9 @@ Git config `cursor.configPath` is set automatically by `setup-githooks`.
 <!-- markdown-project-structure:start -->
 - [cursor-config](readme.md)
   - Githooks
+  - Rules
+    - [Markdown folder kebab case](rules/markdown-folder-kebab-case.mdc)
+    - [Markdown toc no title](rules/markdown-toc-no-title.mdc)
   - Skills
     - Browser Bookmarks Sync
       - [Browser bookmarks sync](skills/browser-bookmarks-sync/SKILL.md)
@@ -134,6 +144,8 @@ Git config `cursor.configPath` is set automatically by `setup-githooks`.
       - [Markdown table of contents](skills/markdown-toc/SKILL.md)
     - Naming Convention Files Folders
       - [Naming convention for files and folders](skills/naming-convention-files-folders/SKILL.md)
+    - Pretty Color Logging
+      - [Pretty color logging](skills/pretty-color-logging/SKILL.md)
     - Review Markdown Structure
       - [Review Markdown structure](skills/review-markdown-structure/SKILL.md)
 - Related repositories

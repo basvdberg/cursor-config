@@ -22,6 +22,16 @@ STRUCT_END = "<!-- markdown-project-structure:end -->"
 EXCLUDED_FROM_BLOCKS = frozenset({"prompts.md"})
 EXCLUDED_FROM_STRUCTURE_CHECKS = frozenset({"prompts.md"})
 HANDLEBARS_SUFFIX = ".handlebars.md"
+DESIGN_PATTERNS_HEADING = re.compile(
+    r"^##\s+Design patterns\s*(?:\r)?$",
+    re.IGNORECASE | re.MULTILINE,
+)
+REPOS_REQUIRE_DESIGN_PATTERNS = frozenset(
+    {"data-solution-2026", "data-engineering-2026"}
+)
+# Architecture/design docs only (not root readme, lessons learned, runbooks, etc.)
+DESIGN_PATTERNS_REQUIRED_PREFIX = "doc/design/"
+PATTERN_REPO_EXEMPT_PREFIXES = ("design-patterns/", "definitions/", "implementation/")
 sys.path.insert(0, str(SCRIPT_DIR))
 from cursor_config import folder_name_valid  # noqa: E402
 
@@ -114,6 +124,48 @@ def is_exempt_structure_file(path: Path) -> bool:
     if path.name.lower() in EXCLUDED_FROM_STRUCTURE_CHECKS:
         return True
     return is_handlebars_template(path)
+
+
+def requires_design_patterns_section(path: Path, repo_root: Path) -> bool:
+    if path.name == "SKILL.md":
+        return False
+    if is_exempt_structure_file(path):
+        return False
+    if repo_root.name not in REPOS_REQUIRE_DESIGN_PATTERNS:
+        return False
+    if repo_root.name == "data-engineering-design-patterns":
+        return False
+    if path.suffix.lower() != ".md":
+        return False
+    try:
+        rel = path.relative_to(repo_root).as_posix()
+    except ValueError:
+        return False
+    return rel.startswith(DESIGN_PATTERNS_REQUIRED_PREFIX)
+
+
+def check_design_patterns_section(
+    path: Path, content: str, repo_root: Path, issues: list[Issue]
+) -> None:
+    if not requires_design_patterns_section(path, repo_root):
+        return
+    if repo_root.name == "data-engineering-design-patterns":
+        try:
+            rel = path.relative_to(repo_root).as_posix()
+        except ValueError:
+            rel = ""
+        if rel.startswith(PATTERN_REPO_EXEMPT_PREFIXES):
+            return
+        if rel == "readme.md":
+            return
+    if not DESIGN_PATTERNS_HEADING.search(content):
+        issues.append(
+            Issue(
+                "ERROR",
+                path,
+                "missing '## Design patterns' section after Table of contents",
+            )
+        )
 
 
 def check_naming(path: Path, repo: Path, issues: list[Issue]) -> None:
@@ -322,6 +374,7 @@ def review_file(
 
     check_naming(path, repo, issues)
     check_blocks(path, content, issues)
+    check_design_patterns_section(path, content, repo, issues)
     check_headings_and_orphans(path, content, issues)
     if not is_handlebars_template(path):
         check_spelling(path, content, issues, spell, domain, typos)

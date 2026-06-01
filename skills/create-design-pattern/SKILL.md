@@ -22,7 +22,7 @@ description: >-
 ## Target
 
 - Repo: `data-engineering-design-patterns/`
-- Path: `design-patterns/{kebab-case}.md`
+- Path: `design-patterns/{data-engineering|generic}/{kebab-case}.md`
 - Title: `#` sentence case; filename kebab-case
 - Naming rule: never include the words `design pattern` in the pattern name, title, or filename.
 

@@ -140,8 +140,15 @@ def extract_title_from_file(path: Path) -> str:
 SECTION_LABEL_OVERRIDES = {
     "definitions": "Definitions",
     "design-patterns": "Design patterns",
+    "data-engineering": "Data engineering",
+    "generic": "Generic",
     "implementation": "Implementation",
 }
+
+DESIGN_PATTERN_CATEGORIES = (
+    ("data-engineering", "data-engineering"),
+    ("generic", "generic"),
+)
 
 SITE_MAP_SKIP_DIR_NAMES = frozenset({"scripts"})
 
@@ -156,7 +163,6 @@ def section_label(folder_name: str) -> str:
 def build_design_patterns_site_map(repo_root: Path, from_file: Path) -> list[str]:
     """Site map shared by the readme table of contents and project structure blocks."""
     definitions: list[tuple[str, Path]] = []
-    design_patterns: list[tuple[str, Path]] = []
     implementation: dict[str, list[tuple[str, Path]]] = {}
 
     for path in sorted((repo_root / "definitions").glob("*.md")):
@@ -164,10 +170,19 @@ def build_design_patterns_site_map(repo_root: Path, from_file: Path) -> list[str
             continue
         definitions.append((extract_title_from_file(path), path))
 
-    for path in sorted((repo_root / "design-patterns").glob("*.md")):
-        if path.name.lower() == "readme.md":
+    patterns_root = repo_root / "design-patterns"
+    design_pattern_categories: list[tuple[str, list[tuple[str, Path]]]] = []
+    for folder, _ in DESIGN_PATTERN_CATEGORIES:
+        cat_dir = patterns_root / folder
+        if not cat_dir.is_dir():
             continue
-        design_patterns.append((extract_title_from_file(path), path))
+        files: list[tuple[str, Path]] = []
+        for path in sorted(cat_dir.glob("*.md")):
+            if path.name.lower() == "readme.md":
+                continue
+            files.append((extract_title_from_file(path), path))
+        if files:
+            design_pattern_categories.append((section_label(folder), files))
 
     impl_dir = repo_root / "implementation"
     if impl_dir.exists():
@@ -195,11 +210,13 @@ def build_design_patterns_site_map(repo_root: Path, from_file: Path) -> list[str
             rel = os.path.relpath(path, from_dir).replace("\\", "/")
             lines.append(f"    - [{title}]({rel})")
 
-    if design_patterns:
+    if design_pattern_categories:
         lines.append(f"  - {section_label('design-patterns')}")
-        for title, path in design_patterns:
-            rel = os.path.relpath(path, from_dir).replace("\\", "/")
-            lines.append(f"    - [{title}]({rel})")
+        for cat_label, files in design_pattern_categories:
+            lines.append(f"    - {cat_label}")
+            for title, path in files:
+                rel = os.path.relpath(path, from_dir).replace("\\", "/")
+                lines.append(f"      - [{title}]({rel})")
 
     if implementation:
         lines.append(f"  - {section_label('implementation')}")

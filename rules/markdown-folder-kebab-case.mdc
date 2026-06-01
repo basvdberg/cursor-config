@@ -1,0 +1,29 @@
+---
+description: Enforce kebab-case naming for markdown files and folders
+alwaysApply: true
+---
+
+# Markdown and Folder Naming Standard
+
+Use `kebab-case` for all newly created or renamed folders and markdown files in this project.
+
+## Required format
+
+- Folder names: lowercase letters, numbers, and hyphens only
+- Markdown files: lowercase letters, numbers, and hyphens only, ending in `.md`
+- No spaces, underscores, camelCase, or PascalCase
+
+## Examples
+
+- `design-patterns`
+- `event-based-orchestration.md`
+- `object-property-tree.md`
+- `historic-bitemporal-table.md`
+
+## Invalid examples
+
+- `design patterns`
+- `Event based orchestration.md`
+- `Object_property_tree.md`
+
+When proposing new paths, always output the kebab-case version.

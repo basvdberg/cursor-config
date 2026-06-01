@@ -76,6 +76,8 @@ The script maintains a **BasNAS** folder between HTML markers:
 
 Only that block is overwritten from `service-url-map.yaml`. Personal folders (including legacy **Basnas**) are left unchanged unless you run a full `--merge`, which rebuilds the file from browser profiles.
 
+**Favicons:** Floccus does not sync `ICON` in HTML. After `--basnas`, run `sync_browser_bookmarks.py --apply-favicons` with Chrome/Brave closed (or menu **11** in `manage-bookmarks.cmd`). Icons are 32×32 PNGs in `bookmarks/basnas-icons/`, injected into each browser’s `Favicons` SQLite DB.
+
 ## With BasNAS deploy
 
 When [deploy-basnas-container](../deploy-basnas-container/SKILL.md) adds or changes a service URL:
@@ -99,6 +101,7 @@ Setup details: [floccus-setup.md](https://github.com/basvdberg/browser-bookmarks
 
 - [ ] `service-url-map.yaml` reflects new `https://<app>.basnas/` URL
 - [ ] `sync_browser_bookmarks.py --basnas` (or full sync if user asked to merge browsers)
+- [ ] `--apply-favicons` after BasNAS URL changes (browsers must be closed)
 - [ ] Commit/push only when user wants bookmarks repo updated
 - [ ] Remind user to Floccus sync if push was skipped
 
