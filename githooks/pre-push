@@ -1,0 +1,26 @@
+#!/bin/sh
+# After a push to main in data-solution-2026, start the CI watcher + NAS git pull deploy.
+# Runs during "git push" (before upload completes); the watcher waits for origin/main + green CI.
+set -e
+
+remote="$1"
+url="$2"
+
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+if [ -z "$ROOT" ]; then
+  exit 0
+fi
+
+HOOK_PS="${ROOT}/release/scripts/post-push-hook.ps1"
+if [ ! -f "$HOOK_PS" ]; then
+  exit 0
+fi
+
+stdin_file=$(mktemp)
+trap 'rm -f "$stdin_file"' EXIT
+cat > "$stdin_file"
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$HOOK_PS" \
+  -RemoteName "$remote" -RemoteUrl "$url" -StdinFile "$stdin_file" || true
+
+exit 0
