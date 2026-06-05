@@ -260,7 +260,7 @@ def resolve_prompts_path(repo_root: Path) -> Path:
     """Repos with release/VERSION store prompts under release/details/<version>/."""
     version_file = repo_root / RELEASE_VERSION_FILE
     if version_file.is_file():
-        version = version_file.read_text(encoding="utf-8").strip()
+        version = version_file.read_text(encoding="utf-8-sig").strip()
         if version:
             return (
                 repo_root
