@@ -13,6 +13,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+RELEASE_METADATA_ONLY = re.compile(
+    r"^release/details/[^/]+/(README|prompts)\.md$|^release/details/README\.md$"
+)
+
 from cursor_config import (
     KEBAB_CASE_PATTERN,
     config_root,
@@ -112,6 +116,84 @@ def run_script(name: str, *extra: str) -> None:
         sys.exit(result.returncode)
 
 
+def get_git_branch() -> str:
+    result = subprocess.run(
+        ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return (result.stdout or "").strip()
+
+
+def get_staged_paths() -> list[str]:
+    result = subprocess.run(
+        ["git", "diff", "--cached", "--name-only"],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    return [line.strip().replace("\\", "/") for line in result.stdout.splitlines() if line.strip()]
+
+
+def should_bump_release() -> bool:
+    version_file = PROJECT_ROOT / "release" / "VERSION"
+    script = PROJECT_ROOT / "release" / "scripts" / "new-release.ps1"
+    if not version_file.is_file() or not script.is_file():
+        return False
+    if get_git_branch() != "main":
+        return False
+    staged = get_staged_paths()
+    if not staged:
+        return False
+    if all(RELEASE_METADATA_ONLY.match(path) for path in staged):
+        return False
+    if os.environ.get("SKIP_RELEASE", "").strip().lower() in {"1", "true", "yes"}:
+        return False
+    return True
+
+
+def run_new_release() -> None:
+    script = PROJECT_ROOT / "release" / "scripts" / "new-release.ps1"
+    if not script.is_file() or sys.platform != "win32":
+        return
+    subprocess.run(
+        [
+            "powershell",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            str(script),
+        ],
+        cwd=PROJECT_ROOT,
+        check=False,
+    )
+
+
+def run_release_details_sync() -> None:
+    version_file = PROJECT_ROOT / "release" / "VERSION"
+    script = PROJECT_ROOT / "release" / "scripts" / "update-release-details.ps1"
+    if not version_file.is_file() or not script.is_file():
+        return
+    if sys.platform != "win32":
+        return
+    subprocess.run(
+        [
+            "powershell",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            str(script),
+        ],
+        cwd=PROJECT_ROOT,
+        check=False,
+    )
+
+
 def stage_markdown_updates() -> None:
     result = subprocess.run(
         ["git", "diff", "--name-only", "--", "*.md"],
@@ -130,8 +212,12 @@ def main() -> int:
     mode = pre_commit_mode(PROJECT_ROOT)
     errors: list[str] = []
 
+    if should_bump_release():
+        run_new_release()
+
     run_script("update_markdown_docs.py")
     run_script("update_prompts.py")
+    run_release_details_sync()
 
     if mode == "strict":
         errors.extend(check_naming_conventions())

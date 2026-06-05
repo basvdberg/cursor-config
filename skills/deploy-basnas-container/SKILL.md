@@ -20,7 +20,9 @@ description: >-
   HTTPS termination, dual DNS (office.c2h.nl public, basnas internal), NAS share
   mounts, and a public-exposure registry. Use when deploying containers on BasNAS,
   QNAP, office.c2h.nl, application.basnas internal hostnames, NGINX reverse proxy,
-  or exposing services to the internet.
+  or exposing services to the internet. For data-solution-2026 app/DAG/poller
+  releases, use deploy-data-solution-basnas (commit and push to main)—not manual
+  SSH git pull.
 ---
 
 # Deploy container service on BasNAS
@@ -39,6 +41,18 @@ BasNAS is a **QNAP** running **Container Station**. **NGINX runs in Docker** on 
 NGINX uses separate TLS certs: `ssl/office.c2h.nl/` (Let's Encrypt) and `ssl/basnas/` (**internal CA**, wildcard `*.basnas`). Never publish `*.basnas` on public DNS.
 
 **QTS admin:** `https://admin.basnas/` (not `basnas.basnas` — conflicts with QNAP short hostname `basnas`).
+
+## Data Solution 2026 (app deploy via CI/CD)
+
+**Do not** deploy `data-solution-2026` application code by SSH `git pull` or `deploy-on-nas.sh` as the default step after making changes.
+
+| Change type | How to deploy |
+|-------------|----------------|
+| Code, DAGs, poller, extractor, metadata in repo | **Commit and push to `main`** → CI/CD → post-push deploys NAS ([deploy-data-solution-basnas](../deploy-data-solution-basnas/SKILL.md)) |
+| `infra/` compose or `.env` on NAS | After push, `RUN_INFRA_SYNC=1` on NAS (see that skill) |
+| New HTTPS vhost, port, or NGINX upstream | This skill (registry + templates below) |
+
+Airflow/Kafka/Postgres URLs: `https://airflow.basnas/`, `https://kafka.basnas/` (inventory in [basnas-inventory.yaml](basnas-inventory.yaml)).
 
 ## Non-negotiable rules
 
@@ -164,4 +178,5 @@ Floccus on Chrome, Brave, and iPhone uses `bookmarks/merged-bookmarks.html` on b
   - [Data Engineering 2026](https://github.com/basvdberg/data-engineering-2026)
   - [Data Engineering Design Patterns](https://github.com/basvdberg/data-engineering-design-patterns)
   - [Data Solution 2026](https://github.com/basvdberg/data-solution-2026)
+  - [Deploy Data Solution 2026 to BasNAS (CI/CD)](../deploy-data-solution-basnas/SKILL.md)
 <!-- markdown-project-structure:end -->

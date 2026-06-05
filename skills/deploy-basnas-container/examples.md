@@ -28,6 +28,8 @@ Use [templates/nginx-admin-qts.conf](templates/nginx-admin-qts.conf). Do not use
     nginx_upstream: airflow-standalone:8080
 ```
 
+**Application deploy (DAGs, poller, extractor):** commit and push to `main` in [data-solution-2026](https://github.com/basvdberg/data-solution-2026); CI/CD pulls to NAS automatically. See [deploy-data-solution-basnas](../deploy-data-solution-basnas/SKILL.md). Use this skill only for NGINX/upstream/registry changes on the host.
+
 ## New Docker app
 
 ```yaml

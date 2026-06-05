@@ -13,7 +13,7 @@
 - [Related repositories](#related-repositories)
 <!-- markdown-toc:end -->
 
-Versioned Cursor automation for the Data Engineering workspace: agent rules, skills, Markdown TOC/structure updaters, `prompts.md` generation, and Git pre-commit hooks.
+Versioned Cursor automation for the Data Engineering workspace: agent rules, skills, Markdown TOC/structure updaters, `prompts.md` generation, and Git pre/post-commit hooks.
 
 Repository: [github.com/basvdberg/cursor-config](https://github.com/basvdberg/cursor-config) (push this folder after clone).
 
@@ -23,8 +23,8 @@ Repository: [github.com/basvdberg/cursor-config](https://github.com/basvdberg/cu
 |------|---------|
 | `rules/` | Shared Cursor rules (`.mdc`); single copy only—no per-repo `.cursor/rules` |
 | `scripts/` | Python tools and install scripts (`install-cursor.ps1`, `update_markdown_docs.py`, …) |
-| `githooks/` | Shared `pre-commit` hook used by consumer repos |
-| `skills/` | Cursor agent skills (`markdown-toc`, `pretty-color-logging`, `deploy-basnas-container`, …) |
+| `githooks/` | Shared `pre-commit` and `post-commit` hooks for consumer repos |
+| `skills/` | Cursor agent skills (`create-skill`, `markdown-toc`, `release-details-updater`, `troubleshooting-error-log`, …) |
 | `browser-bookmarks-sync.json` | Paths to Chrome/Brave profiles and the Floccus Git repo |
 
 Consumer repositories keep repo-specific files only, for example `project-structure-external.json` and `project-structure-descriptions.json` at their own roots.
@@ -83,7 +83,7 @@ Run from a **consumer** Git root:
 $cfg = Resolve-Path ..\cursor-config
 python "$cfg\scripts\update_markdown_docs.py" --root (Get-Location)
 python "$cfg\scripts\update_markdown_docs.py" --toc-only
-python "$cfg\scripts\update_prompts.py"
+python "$cfg\scripts\update_prompts.py"   # root prompts.md, or release/details/<version>/ when release/VERSION exists
 python "$cfg\scripts\review_markdown.py" .
 ```
 
@@ -124,6 +124,8 @@ Git config `cursor.configPath` is set automatically by `setup-githooks`.
     - [Markdown folder kebab case](rules/markdown-folder-kebab-case.mdc)
     - [Markdown toc no title](rules/markdown-toc-no-title.mdc)
   - Skills
+    - Create Skill
+      - [Create skill (cursor-config)](skills/create-skill/SKILL.md)
     - Browser Bookmarks Sync
       - [Browser bookmarks sync](skills/browser-bookmarks-sync/SKILL.md)
     - Create Design Pattern
@@ -148,6 +150,12 @@ Git config `cursor.configPath` is set automatically by `setup-githooks`.
       - [Pretty color logging](skills/pretty-color-logging/SKILL.md)
     - Review Markdown Structure
       - [Review Markdown structure](skills/review-markdown-structure/SKILL.md)
+    - Release Details Updater
+      - [Release details updater](skills/release-details-updater/SKILL.md)
+    - Troubleshooting Error Log
+      - [Troubleshooting error log](skills/troubleshooting-error-log/SKILL.md)
+      - [Examples](skills/troubleshooting-error-log/examples.md)
+      - [Reference](skills/troubleshooting-error-log/reference.md)
 - Related repositories
   - [Browser bookmarks sync](https://github.com/basvdberg/browser-bookmarks-sync)
   - [Data Engineering 2026](https://github.com/basvdberg/data-engineering-2026)

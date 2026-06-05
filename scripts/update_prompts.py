@@ -18,6 +18,8 @@ TRANSCRIPTS_DIR = (
 )
 
 PROMPTS_FILENAME = "prompts.md"
+RELEASE_VERSION_FILE = "release/VERSION"
+RELEASE_DETAILS_DIR = "release/details"
 
 # Match prompts to a repo by keywords (case-insensitive). First matching project wins
 # when scores tie, order below is used as priority for equal scores.
@@ -254,6 +256,28 @@ def sessions_for_project(all_sessions: list[list[str]], project: str) -> list[li
     return filtered
 
 
+def resolve_prompts_path(repo_root: Path) -> Path:
+    """Repos with release/VERSION store prompts under release/details/<version>/."""
+    version_file = repo_root / RELEASE_VERSION_FILE
+    if version_file.is_file():
+        version = version_file.read_text(encoding="utf-8").strip()
+        if version:
+            return (
+                repo_root
+                / RELEASE_DETAILS_DIR
+                / version
+                / PROMPTS_FILENAME
+            )
+    return repo_root / PROMPTS_FILENAME
+
+
+def remove_legacy_root_prompts(repo_root: Path, target: Path) -> None:
+    legacy = (repo_root / PROMPTS_FILENAME).resolve()
+    if legacy != target.resolve() and legacy.is_file():
+        legacy.unlink()
+        print(f"removed: {PROMPTS_FILENAME} (release-scoped prompts only)")
+
+
 def generate_prompts_md(project: str, sessions: list[list[str]]) -> str:
     lines = [
         "# Prompts",
@@ -281,16 +305,23 @@ def update_prompts(repo_root: Path, project: str | None = None) -> bool:
         return False
 
     sessions = sessions_for_project(extract_sessions_from_transcripts(), project)
-    prompts_path = repo_root / PROMPTS_FILENAME
+    prompts_path = resolve_prompts_path(repo_root)
+    release_scoped = prompts_path != (repo_root / PROMPTS_FILENAME).resolve()
+    remove_legacy_root_prompts(repo_root, prompts_path)
     new_content = generate_prompts_md(project, sessions)
 
     if prompts_path.exists():
         current = prompts_path.read_text(encoding="utf-8")
+        if release_scoped:
+            # Curated per-release prompts are not overwritten from the repo-root hook.
+            return False
         if current.strip() == new_content.strip():
             return False
 
+    prompts_path.parent.mkdir(parents=True, exist_ok=True)
     prompts_path.write_text(new_content, encoding="utf-8", newline="\n")
-    print(f"updated: {PROMPTS_FILENAME} ({len(sessions)} session(s), {project})")
+    rel = prompts_path.relative_to(repo_root)
+    print(f"updated: {rel} ({len(sessions)} session(s), {project})")
     return True
 
 
