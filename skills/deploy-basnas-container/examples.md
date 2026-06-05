@@ -14,17 +14,17 @@
 ```yaml
   admin:
     expose: internal
-    url: https://admin.basnas/
+    url: https://admin.example/
 ```
 
-Use [templates/nginx-admin-qts.conf](templates/nginx-admin-qts.conf). Do not use `https://basnas.basnas/` — use **admin.basnas**.
+Use [templates/nginx-admin-qts.conf](templates/nginx-admin-qts.conf). Do not use `https://basnas.example/` — use **admin.example**.
 
 ## Airflow + data-solution
 
 ```yaml
   airflow:
     expose: internal
-    url: https://airflow.basnas/
+    url: https://airflow.example/
     nginx_upstream: airflow-standalone:8080
 ```
 
@@ -35,7 +35,7 @@ Use [templates/nginx-admin-qts.conf](templates/nginx-admin-qts.conf). Do not use
 ```yaml
   my-app:
     expose: internal
-    url: https://my-app.basnas/
+    url: https://my-app.example/
     nginx_upstream: my-app:8080
 ```
 
@@ -56,32 +56,42 @@ Use [templates/nginx-app-public.conf](templates/nginx-app-public.conf).
 <!-- markdown-project-structure:start -->
 - [cursor-config](../../readme.md)
   - Githooks
+  - Rules
   - Skills
     - Browser Bookmarks Sync
       - [Browser bookmarks sync](../browser-bookmarks-sync/SKILL.md)
     - Create Design Pattern
       - [Create design pattern](../create-design-pattern/SKILL.md)
       - [{Title}](../create-design-pattern/TEMPLATE.md)
+    - Create Skill
+      - [Create skill (cursor-config)](../create-skill/SKILL.md)
     - Deploy Basnas Container
       - Templates
-      - [Fix `admin.basnas` not resolving](dns-basnas-setup.md)
+      - [Fix admin hostname not resolving](dns-basnas-setup.md)
       - [Examples](examples.md)
-      - [NGINX as HTTPS edge on port 443 (BasNAS / QNAP)](nginx-on-443.md)
-      - [BasNAS deployment reference](reference.md)
-      - [Deploy container service on BasNAS](SKILL.md)
-      - [Troubleshooting “Your connection is not private” (*.basnas)](troubleshooting-tls.md)
-      - [BasNAS URL map](url-map.md)
+      - [NGINX as HTTPS edge on port 443 (local server / QNAP)](nginx-on-443.md)
+      - [local server deployment reference](reference.md)
+      - [Deploy container service on local server](SKILL.md)
+      - [Troubleshooting “Your connection is not private” (*.example)](troubleshooting-tls.md)
+      - [local server URL map](url-map.md)
     - Markdown Project Structure
       - [Markdown project structure](../markdown-project-structure/SKILL.md)
     - Markdown Toc
       - [Markdown table of contents](../markdown-toc/SKILL.md)
     - Naming Convention Files Folders
       - [Naming convention for files and folders](../naming-convention-files-folders/SKILL.md)
+    - Pretty Color Logging
+      - [Pretty Color Logging](../pretty-color-logging/SKILL.md)
+    - Release Details Updater
+      - [Release Details Updater](../release-details-updater/SKILL.md)
     - Review Markdown Structure
       - [Review Markdown structure](../review-markdown-structure/SKILL.md)
+    - Troubleshooting Error Log
+      - [Examples](../troubleshooting-error-log/examples.md)
+      - [Troubleshooting error reference](../troubleshooting-error-log/reference.md)
+      - [Troubleshooting error log](../troubleshooting-error-log/SKILL.md)
 - Related repositories
-  - [Browser bookmarks sync](https://github.com/basvdberg/browser-bookmarks-sync)
-  - [Data Engineering 2026](https://github.com/basvdberg/data-engineering-2026)
-  - [Data Engineering Design Patterns](https://github.com/basvdberg/data-engineering-design-patterns)
-  - [Data Solution 2026](https://github.com/basvdberg/data-solution-2026)
+  - [Data Engineering 2026](https://github.com/basvdberg/data-engineering-2026) — Course and learning materials
+  - [Data Engineering Design Patterns](https://github.com/basvdberg/data-engineering-design-patterns) — Design pattern catalogue
+  - [Data Solution 2026](https://github.com/basvdberg/data-solution-2026) — Data solution proof of concept
 <!-- markdown-project-structure:end -->

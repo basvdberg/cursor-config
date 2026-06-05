@@ -121,25 +121,23 @@ Git config `cursor.configPath` is set automatically by `setup-githooks`.
 - [cursor-config](readme.md)
   - Githooks
   - Rules
-    - [Markdown folder kebab case](rules/markdown-folder-kebab-case.mdc)
-    - [Markdown toc no title](rules/markdown-toc-no-title.mdc)
   - Skills
-    - Create Skill
-      - [Create skill (cursor-config)](skills/create-skill/SKILL.md)
     - Browser Bookmarks Sync
       - [Browser bookmarks sync](skills/browser-bookmarks-sync/SKILL.md)
     - Create Design Pattern
       - [Create design pattern](skills/create-design-pattern/SKILL.md)
       - [{Title}](skills/create-design-pattern/TEMPLATE.md)
+    - Create Skill
+      - [Create skill (cursor-config)](skills/create-skill/SKILL.md)
     - Deploy Basnas Container
       - Templates
-      - [Fix `admin.basnas` not resolving](skills/deploy-basnas-container/dns-basnas-setup.md)
+      - [Fix admin hostname not resolving](skills/deploy-basnas-container/dns-basnas-setup.md)
       - [Examples](skills/deploy-basnas-container/examples.md)
-      - [NGINX as HTTPS edge on port 443 (BasNAS / QNAP)](skills/deploy-basnas-container/nginx-on-443.md)
-      - [BasNAS deployment reference](skills/deploy-basnas-container/reference.md)
-      - [Deploy container service on BasNAS](skills/deploy-basnas-container/SKILL.md)
-      - [Troubleshooting “Your connection is not private” (*.basnas)](skills/deploy-basnas-container/troubleshooting-tls.md)
-      - [BasNAS URL map](skills/deploy-basnas-container/url-map.md)
+      - [NGINX as HTTPS edge on port 443 (local server / QNAP)](skills/deploy-basnas-container/nginx-on-443.md)
+      - [local server deployment reference](skills/deploy-basnas-container/reference.md)
+      - [Deploy container service on local server](skills/deploy-basnas-container/SKILL.md)
+      - [Troubleshooting “Your connection is not private” (*.example)](skills/deploy-basnas-container/troubleshooting-tls.md)
+      - [local server URL map](skills/deploy-basnas-container/url-map.md)
     - Markdown Project Structure
       - [Markdown project structure](skills/markdown-project-structure/SKILL.md)
     - Markdown Toc
@@ -147,18 +145,17 @@ Git config `cursor.configPath` is set automatically by `setup-githooks`.
     - Naming Convention Files Folders
       - [Naming convention for files and folders](skills/naming-convention-files-folders/SKILL.md)
     - Pretty Color Logging
-      - [Pretty color logging](skills/pretty-color-logging/SKILL.md)
+      - [Pretty Color Logging](skills/pretty-color-logging/SKILL.md)
+    - Release Details Updater
+      - [Release Details Updater](skills/release-details-updater/SKILL.md)
     - Review Markdown Structure
       - [Review Markdown structure](skills/review-markdown-structure/SKILL.md)
-    - Release Details Updater
-      - [Release details updater](skills/release-details-updater/SKILL.md)
     - Troubleshooting Error Log
-      - [Troubleshooting error log](skills/troubleshooting-error-log/SKILL.md)
       - [Examples](skills/troubleshooting-error-log/examples.md)
-      - [Reference](skills/troubleshooting-error-log/reference.md)
+      - [Troubleshooting error reference](skills/troubleshooting-error-log/reference.md)
+      - [Troubleshooting error log](skills/troubleshooting-error-log/SKILL.md)
 - Related repositories
-  - [Browser bookmarks sync](https://github.com/basvdberg/browser-bookmarks-sync)
-  - [Data Engineering 2026](https://github.com/basvdberg/data-engineering-2026)
-  - [Data Engineering Design Patterns](https://github.com/basvdberg/data-engineering-design-patterns)
-  - [Data Solution 2026](https://github.com/basvdberg/data-solution-2026)
+  - [Data Engineering 2026](https://github.com/basvdberg/data-engineering-2026) — Course and learning materials
+  - [Data Engineering Design Patterns](https://github.com/basvdberg/data-engineering-design-patterns) — Design pattern catalogue
+  - [Data Solution 2026](https://github.com/basvdberg/data-solution-2026) — Data solution proof of concept
 <!-- markdown-project-structure:end -->

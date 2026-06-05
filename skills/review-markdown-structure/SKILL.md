@@ -4,6 +4,7 @@
 - [Goal](#goal)
 - [Document layout](#document-layout)
 - [Design patterns section](#design-patterns-section)
+- [Public audience](#public-audience)
 - [Checks](#checks)
 - [Run the reviewer](#run-the-reviewer)
 - [Agent workflow](#agent-workflow)
@@ -11,12 +12,16 @@
 - [Related skills](#related-skills)
 <!-- markdown-toc:end -->
 
+## Table of contents
+
+
 ---
 name: review-markdown-structure
 description: >-
-  Reviews Markdown files for spelling, kebab-case naming, heading hierarchy,
-  orphan paragraphs, and required TOC/project-structure blocks. Use when
-  reviewing markdown structure, documentation quality, or before committing docs.
+  Reviews and authors Markdown for spelling, kebab-case naming, heading hierarchy,
+  orphan paragraphs, required TOC/project-structure blocks, and public-audience
+  readability (no local hostnames such as basnas — use "local server" instead).
+  Use when writing, reviewing, or committing documentation.
 ---
 
 # Review Markdown structure
@@ -75,6 +80,25 @@ This document describes how DSA metadata is laid out in Git. Definitions: [Data 
 
 Regenerate the TOC after adding the section (`markdown-toc` skill).
 
+## Public audience
+
+Public GitHub documentation must make sense to readers who do not know your home lab. Write for a **public audience**: explain concepts and steps without private hostnames, SSH aliases, or local DNS zones.
+
+| Avoid in public prose | Use instead |
+|-----------------------|-------------|
+| `basnas`, `BasNAS`, `Basnas` (hostname or nickname) | **local server** |
+| `kafka.basnas`, `admin.basnas`, `*.basnas` | a service URL on the **local server** (generic example: `https://kafka.example`) |
+| `ssh bas@basnas` | SSH to the **local server** |
+| “on Basnas”, “Basnas URLs”, “deploy to Basnas” | on the **local server**, service URLs on the **local server**, deploy to the **local server** |
+
+**Scope:**
+
+- Apply this rule in **public content**: `readme.md`, `lessons-learned*.md`, `doc/**`, `release/**`, design docs, and any file meant for GitHub readers.
+- **Agent-only** files (`SKILL.md`, private runbooks, operator notes) may keep real hostnames when automation requires them.
+- In architecture or lessons-learned prose, prefer **local server** (or **local NAS** when the hardware context matters). Reserve real hostnames for non-public operator material.
+
+**When editing existing docs:** replace hostname-style references with **local server**; keep technical accuracy without exposing private naming.
+
 ## Checks
 
 | Check | Rule |
@@ -87,6 +111,7 @@ Regenerate the TOC after adding the section (`markdown-toc` skill).
 | **Table of contents** | Required on content `.md` files: `## Table of contents` + `markdown-toc` markers. Exempt: `prompts.md`, `*.handlebars.md` (ADL templates). |
 | **Design patterns** | Required `## Design patterns` after TOC only under `doc/design/` (see [Design patterns section](#design-patterns-section)). Listed in the TOC when present. |
 | **Project structure** | Same exempt list: `## Project structure` + `markdown-project-structure` markers at end of file. |
+| **Public audience** | No private hostnames (`basnas`, `*.basnas`, SSH targets) in public content; use **local server** (see [Public audience](#public-audience)). |
 
 ## Run the reviewer
 
@@ -120,7 +145,8 @@ Requires: Python 3.10+. Spelling uses `pyspellchecker` if installed (`pip instal
 2. Fix **errors** first: naming, missing markers, missing Design patterns section, heading skips, orphan paragraphs.
 3. Run `--fix` to refresh TOC/structure blocks, then re-run the reviewer.
 4. Fix spelling and style manually where the script flags **warnings** (technical terms → add to `domain-words.txt`).
-5. Summarize per repo: files OK, files fixed, remaining warnings.
+5. Scan public content for private hostnames (`basnas`, `*.basnas`); rewrite as **local server** per [Public audience](#public-audience).
+6. Summarize per repo: files OK, files fixed, remaining warnings.
 
 ## Report format
 
@@ -142,32 +168,42 @@ Exit code `1` if any ERROR; `0` if only warnings or clean.
 <!-- markdown-project-structure:start -->
 - [cursor-config](../../readme.md)
   - Githooks
+  - Rules
   - Skills
     - Browser Bookmarks Sync
       - [Browser bookmarks sync](../browser-bookmarks-sync/SKILL.md)
     - Create Design Pattern
       - [Create design pattern](../create-design-pattern/SKILL.md)
       - [{Title}](../create-design-pattern/TEMPLATE.md)
+    - Create Skill
+      - [Create skill (cursor-config)](../create-skill/SKILL.md)
     - Deploy Basnas Container
       - Templates
-      - [Fix `admin.basnas` not resolving](../deploy-basnas-container/dns-basnas-setup.md)
+      - [Fix admin hostname not resolving](../deploy-basnas-container/dns-basnas-setup.md)
       - [Examples](../deploy-basnas-container/examples.md)
-      - [NGINX as HTTPS edge on port 443 (BasNAS / QNAP)](../deploy-basnas-container/nginx-on-443.md)
-      - [BasNAS deployment reference](../deploy-basnas-container/reference.md)
-      - [Deploy container service on BasNAS](../deploy-basnas-container/SKILL.md)
-      - [Troubleshooting “Your connection is not private” (*.basnas)](../deploy-basnas-container/troubleshooting-tls.md)
-      - [BasNAS URL map](../deploy-basnas-container/url-map.md)
+      - [NGINX as HTTPS edge on port 443 (local server / QNAP)](../deploy-basnas-container/nginx-on-443.md)
+      - [local server deployment reference](../deploy-basnas-container/reference.md)
+      - [Deploy container service on local server](../deploy-basnas-container/SKILL.md)
+      - [Troubleshooting “Your connection is not private” (*.example)](../deploy-basnas-container/troubleshooting-tls.md)
+      - [local server URL map](../deploy-basnas-container/url-map.md)
     - Markdown Project Structure
       - [Markdown project structure](../markdown-project-structure/SKILL.md)
     - Markdown Toc
       - [Markdown table of contents](../markdown-toc/SKILL.md)
     - Naming Convention Files Folders
       - [Naming convention for files and folders](../naming-convention-files-folders/SKILL.md)
+    - Pretty Color Logging
+      - [Pretty Color Logging](../pretty-color-logging/SKILL.md)
+    - Release Details Updater
+      - [Release Details Updater](../release-details-updater/SKILL.md)
     - Review Markdown Structure
       - [Review Markdown structure](SKILL.md)
+    - Troubleshooting Error Log
+      - [Examples](../troubleshooting-error-log/examples.md)
+      - [Troubleshooting error reference](../troubleshooting-error-log/reference.md)
+      - [Troubleshooting error log](../troubleshooting-error-log/SKILL.md)
 - Related repositories
-  - [Browser bookmarks sync](https://github.com/basvdberg/browser-bookmarks-sync)
-  - [Data Engineering 2026](https://github.com/basvdberg/data-engineering-2026)
-  - [Data Engineering Design Patterns](https://github.com/basvdberg/data-engineering-design-patterns)
-  - [Data Solution 2026](https://github.com/basvdberg/data-solution-2026)
+  - [Data Engineering 2026](https://github.com/basvdberg/data-engineering-2026) — Course and learning materials
+  - [Data Engineering Design Patterns](https://github.com/basvdberg/data-engineering-design-patterns) — Design pattern catalogue
+  - [Data Solution 2026](https://github.com/basvdberg/data-solution-2026) — Data solution proof of concept
 <!-- markdown-project-structure:end -->

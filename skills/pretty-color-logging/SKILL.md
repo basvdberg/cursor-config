@@ -1,3 +1,16 @@
+## Table of contents
+
+<!-- markdown-toc:start -->
+- [Goal](#goal)
+- [Apply This Pattern](#apply-this-pattern)
+- [Best Practices](#best-practices)
+- [Reference Implementation](#reference-implementation)
+- [Validation Checklist](#validation-checklist)
+<!-- markdown-toc:end -->
+
+## Table of contents
+
+
 ---
 name: pretty-color-logging
 description: Standardize Python CLI logging with readable, colorized, structured output. Use when adding or improving logs for scripts, extractors, pollers, workers, and batch jobs that print to terminal.
@@ -54,3 +67,48 @@ Color guidance:
 - [ ] `--verbose` increases detail without changing message semantics.
 - [ ] No duplicate log lines.
 - [ ] Extractor/poller status uses logs instead of prints.
+
+## Project structure
+
+<!-- markdown-project-structure:start -->
+- [cursor-config](../../readme.md)
+  - Githooks
+  - Rules
+  - Skills
+    - Browser Bookmarks Sync
+      - [Browser bookmarks sync](../browser-bookmarks-sync/SKILL.md)
+    - Create Design Pattern
+      - [Create design pattern](../create-design-pattern/SKILL.md)
+      - [{Title}](../create-design-pattern/TEMPLATE.md)
+    - Create Skill
+      - [Create skill (cursor-config)](../create-skill/SKILL.md)
+    - Deploy Basnas Container
+      - Templates
+      - [Fix admin hostname not resolving](../deploy-basnas-container/dns-basnas-setup.md)
+      - [Examples](../deploy-basnas-container/examples.md)
+      - [NGINX as HTTPS edge on port 443 (local server / QNAP)](../deploy-basnas-container/nginx-on-443.md)
+      - [local server deployment reference](../deploy-basnas-container/reference.md)
+      - [Deploy container service on local server](../deploy-basnas-container/SKILL.md)
+      - [Troubleshooting “Your connection is not private” (*.example)](../deploy-basnas-container/troubleshooting-tls.md)
+      - [local server URL map](../deploy-basnas-container/url-map.md)
+    - Markdown Project Structure
+      - [Markdown project structure](../markdown-project-structure/SKILL.md)
+    - Markdown Toc
+      - [Markdown table of contents](../markdown-toc/SKILL.md)
+    - Naming Convention Files Folders
+      - [Naming convention for files and folders](../naming-convention-files-folders/SKILL.md)
+    - Pretty Color Logging
+      - [Pretty Color Logging](SKILL.md)
+    - Release Details Updater
+      - [Release Details Updater](../release-details-updater/SKILL.md)
+    - Review Markdown Structure
+      - [Review Markdown structure](../review-markdown-structure/SKILL.md)
+    - Troubleshooting Error Log
+      - [Examples](../troubleshooting-error-log/examples.md)
+      - [Troubleshooting error reference](../troubleshooting-error-log/reference.md)
+      - [Troubleshooting error log](../troubleshooting-error-log/SKILL.md)
+- Related repositories
+  - [Data Engineering 2026](https://github.com/basvdberg/data-engineering-2026) — Course and learning materials
+  - [Data Engineering Design Patterns](https://github.com/basvdberg/data-engineering-design-patterns) — Design pattern catalogue
+  - [Data Solution 2026](https://github.com/basvdberg/data-solution-2026) — Data solution proof of concept
+<!-- markdown-project-structure:end -->

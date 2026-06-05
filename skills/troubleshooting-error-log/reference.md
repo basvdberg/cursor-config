@@ -1,5 +1,16 @@
 # Troubleshooting error reference
 
+## Table of contents
+
+<!-- markdown-toc:start -->
+- [SSH / remote shell](#ssh-remote-shell)
+- [Docker / containers](#docker-containers)
+- [Scripts and paths](#scripts-and-paths)
+- [Git / CI / deploy](#git-ci-deploy)
+- [Agent efficiency anti-patterns](#agent-efficiency-anti-patterns)
+- [Linking to project docs](#linking-to-project-docs)
+<!-- markdown-toc:end -->
+
 Catalog of frequent signatures. Match log entries to these; extend the catalog when a new class appears twice.
 
 ## SSH / remote shell
@@ -48,3 +59,48 @@ Log these explicitly when observed:
 ## Linking to project docs
 
 When errors relate to a known project lesson, cross-reference in **Description** (e.g. `lessons-learned-part2.md` § Remote SSH) — do not duplicate long prose in the log.
+
+## Project structure
+
+<!-- markdown-project-structure:start -->
+- [cursor-config](../../readme.md)
+  - Githooks
+  - Rules
+  - Skills
+    - Browser Bookmarks Sync
+      - [Browser bookmarks sync](../browser-bookmarks-sync/SKILL.md)
+    - Create Design Pattern
+      - [Create design pattern](../create-design-pattern/SKILL.md)
+      - [{Title}](../create-design-pattern/TEMPLATE.md)
+    - Create Skill
+      - [Create skill (cursor-config)](../create-skill/SKILL.md)
+    - Deploy Basnas Container
+      - Templates
+      - [Fix admin hostname not resolving](../deploy-basnas-container/dns-basnas-setup.md)
+      - [Examples](../deploy-basnas-container/examples.md)
+      - [NGINX as HTTPS edge on port 443 (local server / QNAP)](../deploy-basnas-container/nginx-on-443.md)
+      - [local server deployment reference](../deploy-basnas-container/reference.md)
+      - [Deploy container service on local server](../deploy-basnas-container/SKILL.md)
+      - [Troubleshooting “Your connection is not private” (*.example)](../deploy-basnas-container/troubleshooting-tls.md)
+      - [local server URL map](../deploy-basnas-container/url-map.md)
+    - Markdown Project Structure
+      - [Markdown project structure](../markdown-project-structure/SKILL.md)
+    - Markdown Toc
+      - [Markdown table of contents](../markdown-toc/SKILL.md)
+    - Naming Convention Files Folders
+      - [Naming convention for files and folders](../naming-convention-files-folders/SKILL.md)
+    - Pretty Color Logging
+      - [Pretty Color Logging](../pretty-color-logging/SKILL.md)
+    - Release Details Updater
+      - [Release Details Updater](../release-details-updater/SKILL.md)
+    - Review Markdown Structure
+      - [Review Markdown structure](../review-markdown-structure/SKILL.md)
+    - Troubleshooting Error Log
+      - [Examples](examples.md)
+      - [Troubleshooting error reference](reference.md)
+      - [Troubleshooting error log](SKILL.md)
+- Related repositories
+  - [Data Engineering 2026](https://github.com/basvdberg/data-engineering-2026) — Course and learning materials
+  - [Data Engineering Design Patterns](https://github.com/basvdberg/data-engineering-design-patterns) — Design pattern catalogue
+  - [Data Solution 2026](https://github.com/basvdberg/data-solution-2026) — Data solution proof of concept
+<!-- markdown-project-structure:end -->
