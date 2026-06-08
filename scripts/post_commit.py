@@ -1,7 +1,7 @@
 """
 Post-commit runner for Data Engineering repositories with release/VERSION.
 
-Refreshes release/details/<version>/prompts.md and README metadata after each commit.
+Refreshes release/YYYY/MM/DD/<version>/prompts.md and readme metadata after each commit.
 """
 
 from __future__ import annotations
@@ -10,6 +10,10 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
 
 from cursor_config import config_root, git_repo_root
 
@@ -48,15 +52,18 @@ def run_release_details_refresh() -> None:
 
 
 def stage_release_detail_updates() -> None:
+    from release_paths import release_details_readme_path, release_prompts_path
+
     version_file = PROJECT_ROOT / "release" / "VERSION"
     if not version_file.is_file():
         return
     version = version_file.read_text(encoding="utf-8").strip()
     if not version:
         return
-    details_dir = PROJECT_ROOT / "release" / "details" / version
-    for name in ("README.md", "prompts.md"):
-        path = details_dir / name
+    for path in (
+        release_details_readme_path(PROJECT_ROOT, version),
+        release_prompts_path(PROJECT_ROOT, version),
+    ):
         if not path.is_file():
             continue
         rel = path.relative_to(PROJECT_ROOT).as_posix()

@@ -1,0 +1,31 @@
+---
+description: Issue inventory — ERR log, incident promotion, per-release retrospectives (data-solution-2026)
+globs:
+  - data-solution-2026/**
+alwaysApply: false
+---
+
+# Issue inventory
+
+When working in **data-solution-2026**:
+
+## During troubleshooting
+
+1. Read `.cursor/troubleshooting-errors.md` before retrying failed commands.
+2. Log ERR entries per `troubleshooting-error-log` skill — log first, fix second.
+3. If `Count > 1` on a known signature, stop and apply the documented Solution.
+4. Promote to `doc/operation/incident/` (INC-NNN) when release validation fails or impact is blocker/degraded.
+
+## Per release
+
+1. After deploy/validation, draft `release/retrospective/<version>.md` per `release-retrospective` skill.
+2. Link incidents and retro from `release/notes/<version>.md` → **Related artifacts**.
+3. Do not edit skills, rules, or checklists from retro action items until the user approves promotions.
+
+## Artifact roles
+
+- `release/notes/` — operator-facing ([Keep a Changelog](https://keepachangelog.com/))
+- `release/details/` — internal audit per version
+- `release/retrospective/` — sprint retro per release
+- `doc/operation/incident/` — blameless postmortems (INC-NNN)
+- `.cursor/troubleshooting-errors.md` — session ERR log

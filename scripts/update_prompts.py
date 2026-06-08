@@ -9,6 +9,10 @@ import re
 import sys
 from pathlib import Path
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
 TRANSCRIPTS_DIR = (
     Path.home()
     / ".cursor"
@@ -19,7 +23,6 @@ TRANSCRIPTS_DIR = (
 
 PROMPTS_FILENAME = "prompts.md"
 RELEASE_VERSION_FILE = "release/VERSION"
-RELEASE_DETAILS_DIR = "release/details"
 
 # Match prompts to a repo by keywords (case-insensitive). First matching project wins
 # when scores tie, order below is used as priority for equal scores.
@@ -257,17 +260,14 @@ def sessions_for_project(all_sessions: list[list[str]], project: str) -> list[li
 
 
 def resolve_prompts_path(repo_root: Path) -> Path:
-    """Repos with release/VERSION store prompts under release/details/<version>/."""
+    """Repos with release/VERSION store prompts under release/YYYY/MM/DD/<version>/."""
+    from release_paths import release_prompts_path
+
     version_file = repo_root / RELEASE_VERSION_FILE
     if version_file.is_file():
         version = version_file.read_text(encoding="utf-8-sig").strip()
         if version:
-            return (
-                repo_root
-                / RELEASE_DETAILS_DIR
-                / version
-                / PROMPTS_FILENAME
-            )
+            return release_prompts_path(repo_root, version)
     return repo_root / PROMPTS_FILENAME
 
 

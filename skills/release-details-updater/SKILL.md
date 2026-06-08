@@ -13,7 +13,7 @@
 
 ---
 name: release-details-updater
-description: Maintain release/details metadata and prompts per release version. Use when creating releases, updating release notes, or when the user asks to keep release details synchronized on each commit.
+description: Maintain release/YYYY/MM/DD/<version>/ metadata and prompts per release. Use when creating releases, updating release notes, or when the user asks to keep release details synchronized on each commit.
 disable-model-invocation: true
 ---
 
@@ -21,29 +21,34 @@ disable-model-invocation: true
 
 ## Purpose
 
-Keep `release/details/` complete and consistent with `release/VERSION`, release notes, and commit history.
+Keep `release/YYYY/MM/DD/<version>/` complete and consistent with `release/VERSION`, release notes, and commit history.
 
 ## Required outputs per release
 
-For each release version, ensure:
+For each release version folder (`release/YYYY/MM/DD/<version>/`), ensure:
 
-- `release/details/<version>/README.md`
-- `release/details/<version>/prompts.md`
+- `notes.md` — operator-facing release notes
+- `readme.md` — internal audit metadata and summary
+- `prompts.md` — prompts used during the release
+- `retrospective.md` (from `release/retrospective-template.md`; agent completes after validation)
 
 Also maintain:
 
-- `release/details/README.md` with a sequential release overview.
+- `release/readme.md` release index table.
+- Cross-links in `notes.md` → **Related artifacts** (readme, retrospective, incidents).
 
 ## Workflow
 
 1. Read `release/VERSION`.
-2. Ensure `release/details/<version>/` exists.
-3. Update `<version>/README.md` with:
+2. Ensure `release/YYYY/MM/DD/<version>/` exists.
+3. Update `readme.md` with:
    - start and end development date/time
    - release commit/tag info
    - sequential summary of changes
-4. Update `<version>/prompts.md` with all prompts used in that release.
-5. Keep `release/details/README.md` in sync with ordered release history.
+4. Update `prompts.md` with all prompts used in that release.
+5. Ensure `readme.md` **Linked files** includes retrospective and incident register.
+6. Keep `release/readme.md` index in sync with ordered release history.
+7. After validation, run or offer [release-retrospective](../release-retrospective/SKILL.md) for that version.
 
 ## Commit-time automation
 
@@ -52,8 +57,8 @@ Shared Git hooks from [cursor-config](https://github.com/basvdberg/cursor-config
 **Pre-commit** (`pre_commit.py`):
 
 - `new-release.ps1` — bumps `release/VERSION` and scaffolds notes/details for the next release (on `main`, unless `SKIP_RELEASE=1` or only metadata files are staged)
-- `update_prompts.py` — writes `release/details/<version>/prompts.md`
-- `update-release-details.ps1` — bootstraps missing `README.md` and the details index
+- `update_prompts.py` — writes `release/YYYY/MM/DD/<version>/prompts.md`
+- `update-release-details.ps1` — bootstraps missing `readme.md`
 
 **Post-commit** (`post_commit.py` + `release/scripts/post-commit-hook.ps1`):
 
@@ -67,7 +72,7 @@ Post-commit changes are staged automatically for the next commit.
 After push to `main`, `wait-and-trigger-pull.ps1` (started by `post-push-hook.ps1`):
 
 - Waits for CI success on the pushed commit
-- `publish-release.ps1` — creates/pushes annotated tag and GitHub Release from `release/notes/<version>.md`
+- `publish-release.ps1` — creates/pushes annotated tag and GitHub Release from `release/YYYY/MM/DD/<version>/notes.md`
 - Triggers NAS deploy
 
 ## Project structure
@@ -103,6 +108,8 @@ After push to `main`, `wait-and-trigger-pull.ps1` (started by `post-push-hook.ps
       - [Pretty Color Logging](../pretty-color-logging/SKILL.md)
     - Release Details Updater
       - [Release Details Updater](SKILL.md)
+    - Release Retrospective
+      - [Release retrospective](../release-retrospective/SKILL.md)
     - Review Markdown Structure
       - [Review Markdown structure](../review-markdown-structure/SKILL.md)
     - Troubleshooting Error Log

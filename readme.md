@@ -24,7 +24,7 @@ Repository: [github.com/basvdberg/cursor-config](https://github.com/basvdberg/cu
 | `rules/` | Shared Cursor rules (`.mdc`); single copy only—no per-repo `.cursor/rules` |
 | `scripts/` | Python tools and install scripts (`install-cursor.ps1`, `update_markdown_docs.py`, …) |
 | `githooks/` | Shared `pre-commit` and `post-commit` hooks for consumer repos |
-| `skills/` | Cursor agent skills (`create-skill`, `markdown-toc`, `release-details-updater`, `troubleshooting-error-log`, …) |
+| `skills/` | Cursor agent skills (`create-skill`, `markdown-toc`, `release-details-updater`, `release-retrospective`, `troubleshooting-error-log`, …) |
 | `browser-bookmarks-sync.json` | Paths to Chrome/Brave profiles and the Floccus Git repo |
 
 Consumer repositories keep repo-specific files only, for example `project-structure-external.json` and `project-structure-descriptions.json` at their own roots.

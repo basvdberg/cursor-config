@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 RELEASE_METADATA_ONLY = re.compile(
-    r"^release/details/[^/]+/(README|prompts)\.md$|^release/details/README\.md$"
+    r"^release/\d{4}/\d{2}/\d{2}/[^/]+/(readme|prompts)\.md$"
 )
 
 from cursor_config import (
@@ -173,6 +173,26 @@ def run_new_release() -> None:
     )
 
 
+def run_update_deploy_config() -> None:
+    script = PROJECT_ROOT / "release" / "scripts" / "update-deploy-config.ps1"
+    if not script.is_file():
+        return
+    if sys.platform != "win32":
+        return
+    subprocess.run(
+        [
+            "powershell",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            str(script),
+        ],
+        cwd=PROJECT_ROOT,
+        check=False,
+    )
+
+
 def run_release_details_sync() -> None:
     version_file = PROJECT_ROOT / "release" / "VERSION"
     script = PROJECT_ROOT / "release" / "scripts" / "update-release-details.ps1"
@@ -214,6 +234,8 @@ def main() -> int:
 
     if should_bump_release():
         run_new_release()
+
+    run_update_deploy_config()
 
     run_script("update_markdown_docs.py")
     run_script("update_prompts.py")

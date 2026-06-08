@@ -5,6 +5,8 @@
 - [When to log](#when-to-log)
 - [Entry format](#entry-format)
 - [Agent rules during troubleshooting](#agent-rules-during-troubleshooting)
+- [Incident promotion](#incident-promotion)
+- [Pre-release scan](#pre-release-scan)
 - [Review workflow](#review-workflow)
 - [Bootstrap](#bootstrap)
 - [Additional resources](#additional-resources)
@@ -86,6 +88,33 @@ Append under `## Session: <YYYY-MM-DD>` (create the heading if needed). Newest e
 3. **Verify before run** — `test -f`, `test -x`, or `Get-Command` / `where.exe` for scripts and CLIs you depend on; log a single entry if missing instead of trial-and-error loops.
 4. **No silent repeats** — if `Count` > 1, stop and apply **Solution**; tell the user the agent repeated a known mistake.
 5. **End of task** — if three or more distinct errors occurred, offer a one-paragraph session summary and point to the log path.
+6. **Promote when significant** — see [Incident promotion](#incident-promotion).
+
+## Incident promotion
+
+Promote ERR entries to a blameless postmortem when **any** of these apply:
+
+| Criterion | Examples |
+|-----------|----------|
+| Release validation failed | Airflow DAG import error after deploy |
+| Severity blocker or degraded | UI down, deploy blocked, data path broken |
+| Root cause is reusable | NAS SSH env, reboot drift, false-done verification |
+| Same theme as existing INC | Extend INC file; add ERR to **Related ERR** |
+
+**Target:** `doc/operation/incident/inc-<NNN>-<kebab-title>.md` (copy from `incident-template.md`).
+
+Update `doc/operation/incident/readme.md` index. Link from `release/notes/<version>.md` → **Related artifacts**.
+
+Categories: `doc/operation/issue-category.md`. After promotion, offer [release-retrospective](../release-retrospective/SKILL.md) for the current `release/VERSION`.
+
+## Pre-release scan
+
+Before release validation or NAS deploy troubleshooting:
+
+1. Read `.cursor/troubleshooting-errors.md`.
+2. For each command you are about to run, check for a matching error signature.
+3. Apply documented **Solution** and **Prevention** first.
+4. If `Count > 1` on any entry, tell the user before proceeding.
 
 ## Review workflow
 
@@ -132,6 +161,8 @@ Agent-maintained log of failures during debugging. Do not edit by hand unless co
 
 - Common signatures and NAS/SSH patterns: [reference.md](reference.md)
 - Example review output: [examples.md](examples.md)
+- Per-release retrospectives: [release-retrospective](../release-retrospective/SKILL.md)
+- Operations hub: `data-solution-2026/doc/operation/readme.md`
 
 ## Project structure
 
@@ -166,6 +197,8 @@ Agent-maintained log of failures during debugging. Do not edit by hand unless co
       - [Pretty Color Logging](../pretty-color-logging/SKILL.md)
     - Release Details Updater
       - [Release Details Updater](../release-details-updater/SKILL.md)
+    - Release Retrospective
+      - [Release retrospective](../release-retrospective/SKILL.md)
     - Review Markdown Structure
       - [Review Markdown structure](../review-markdown-structure/SKILL.md)
     - Troubleshooting Error Log
