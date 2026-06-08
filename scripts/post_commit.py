@@ -57,7 +57,7 @@ def stage_release_detail_updates() -> None:
     version_file = PROJECT_ROOT / "release" / "VERSION"
     if not version_file.is_file():
         return
-    version = version_file.read_text(encoding="utf-8").strip()
+    version = version_file.read_text(encoding="utf-8-sig").strip()
     if not version:
         return
     for path in (

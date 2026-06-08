@@ -9,7 +9,7 @@ _VERSION_RE = re.compile(r"^v?(\d{4})\.(\d{2})\.(\d{2})\.(\d+)$")
 
 
 def normalize_version(version: str) -> str:
-    v = version.strip()
+    v = version.strip().lstrip("\ufeff")
     if not v:
         raise ValueError("Release version is empty.")
     if not v.startswith("v"):
