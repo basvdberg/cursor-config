@@ -129,6 +129,8 @@ Git config `cursor.configPath` is set automatically by `setup-githooks`.
       - [{Title}](skills/create-design-pattern/TEMPLATE.md)
     - Create Skill
       - [Create skill (cursor-config)](skills/create-skill/SKILL.md)
+    - Basnas Ssh
+      - [BasNAS SSH (docker and git)](skills/basnas-ssh/SKILL.md)
     - Deploy Basnas Container
       - Templates
       - [Fix admin hostname not resolving](skills/deploy-basnas-container/dns-basnas-setup.md)

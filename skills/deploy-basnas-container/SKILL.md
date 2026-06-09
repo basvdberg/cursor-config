@@ -35,6 +35,8 @@ The local server is a **QNAP** running **Container Station**. **NGINX runs in Do
 
 **Connection settings:** [local-server.env.example](local-server.env.example). **Service inventory:** [basnas-inventory.yaml](basnas-inventory.yaml). **Canonical URLs:** [service-url-map.yaml](service-url-map.yaml) / [url-map.md](url-map.md).
 
+**SSH / docker on NAS:** use plain `ssh bas@basnas 'docker …'` after one-time setup — see [basnas-ssh](../basnas-ssh/SKILL.md). Do not prefix every command with `bash -lc` + `nas-path.sh`.
+
 ## Dual DNS zones
 
 | Zone | URL pattern | Public DNS | Use for |
@@ -163,6 +165,8 @@ Floccus on Chrome, Brave, and iPhone uses `bookmarks/merged-bookmarks.html` on b
       - [{Title}](../create-design-pattern/TEMPLATE.md)
     - Create Skill
       - [Create skill (cursor-config)](../create-skill/SKILL.md)
+    - Basnas Ssh
+      - [BasNAS SSH (docker and git)](../basnas-ssh/SKILL.md)
     - Deploy Basnas Container
       - Templates
       - [Fix admin hostname not resolving](dns-basnas-setup.md)

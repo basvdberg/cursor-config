@@ -17,8 +17,8 @@ Catalog of frequent signatures. Match log entries to these; extend the catalog w
 
 | Signature | Description | Solution | Prevention |
 |-----------|-------------|----------|------------|
-| `docker: command not found` (SSH) | Non-interactive `sshd` sets minimal `PATH`; `~/.profile` not loaded | `source` project `infra/scripts/nas-remote-env.sh` or export Container Station bin once | Source env script at start of every NAS SSH session before any `docker`/`git` |
-| `git: command not found` (SSH QNAP) | QGit not on default PATH | Add `/opt/QGit/libexec/git-core` via `nas-remote-env.sh` | Same as docker |
+| `docker: command not found` (SSH) | Non-interactive `sshd` uses `/bin/sh` + minimal `PATH`; `~/.profile` not loaded | `setup-nas-ssh-env.sh` + set `bas` shell to `nas-login-sh` in `/etc/passwd` (see **basnas-ssh** skill) | Plain `ssh bas@basnas 'docker …'` after one-time setup; no per-command `bash -lc` |
+| `git: command not found` (SSH QNAP) | QGit not on default PATH / libcharset | `setup-nas-ssh-env.sh` git wrapper + same login shell fix | Same as docker |
 | Wrong host shell | Commands for bash run in PowerShell SSH or vice versa | Use host-appropriate syntax; open correct shell | Read terminal metadata (`cwd`, shell) before commands |
 | Interactive-only setup | Fix works in manual SSH but not agent SSH | Put exports in script sourced by automation, not only `.bashrc` interactive | Prefer `nas-remote-env.sh` over ad hoc `export` |
 
