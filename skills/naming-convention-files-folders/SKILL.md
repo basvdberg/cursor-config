@@ -102,6 +102,7 @@ When a repo uses a **documented override**, follow that repo’s `Conventions` o
 
 ## Related skills
 
+- `variable-naming` — config keys, env vars, and Airflow Variables (value semantics, not consumer use)
 - `review-markdown-structure` — validates kebab-case for markdown repos (with per-repo overrides)
 - `create-design-pattern` — design pattern *files* use kebab-case stems; titles are sentence case
 
