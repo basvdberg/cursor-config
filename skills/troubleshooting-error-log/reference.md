@@ -21,6 +21,7 @@ Catalog of frequent signatures. Match log entries to these; extend the catalog w
 | `git: command not found` (SSH QNAP) | QGit not on default PATH / libcharset | `setup-nas-ssh-env.sh` git wrapper + same login shell fix | Same as docker |
 | Wrong host shell | Commands for bash run in PowerShell SSH or vice versa | Use host-appropriate syntax; open correct shell | Read terminal metadata (`cwd`, shell) before commands |
 | Interactive-only setup | Fix works in manual SSH but not agent SSH | Put exports in script sourced by automation, not only `.bashrc` interactive | Prefer `nas-remote-env.sh` over ad hoc `export` |
+| `bash: <word>: command not found` after `\|` in SSH | `grep -E "a\|b\|c"` lost quotes; `\|` became shell pipes on NAS | Single-quote regex on remote: `grep -E 'a\|b\|c'`; or avoid remote pipe — `docker ps --format` + filter locally | **basnas-ssh** quoting section; promote at release retro |
 
 ## Docker / containers
 

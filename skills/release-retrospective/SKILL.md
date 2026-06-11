@@ -92,6 +92,27 @@ Failures fixed only in Cursor chat are invisible to git and an empty ERR log. Sc
 
 **Do not** treat “no ERR entries” as “no incidents” without transcript scan when the user references a chat or validation failed.
 
+### Local-server SSH command review
+
+When the release touched NAS deploy, Airflow, Docker, or infra validation, scan transcripts and terminal history for **what agents actually ran** over SSH. This is **not** automatic — codify working patterns in skills at retro time.
+
+**Look for:**
+
+- `ssh bas@basnas`, `docker exec`, `deploy-on-nas`, `deploy-infra-on-nas`
+- Failures: `command not found`, `bash: <word>: command not found` after `|` (quoting), wrong remote paths, repeat `which`/`find` loops
+- The command variant that succeeded (often different quoting: outer `"…"` vs `'…'`, no remote `grep`, `docker --filter` instead of pipe)
+
+**Promote to:**
+
+| Finding | Destination |
+|---------|-------------|
+| Quoting / pipes / PowerShell → SSH | [basnas-ssh](../basnas-ssh/SKILL.md) — copy-paste blocks, bad vs good examples |
+| PATH / docker not found | **basnas-ssh**, ERR-001, `infra/readme.md` |
+| Wrong container or script path | **basnas-ssh**, deploy skills, ERR log **Prevention** |
+| Repeat in one session | **troubleshooting-error-log** reference catalog |
+
+Add promotion items to retro **Action items** and **Promotions** checklist. Link lesson anchor: [lessons-learned-part2 — Local server interaction](https://github.com/basvdberg/data-solution-2026/blob/main/lessons-learned-part2.md#local-server-interaction-learn-from-ssh-commands).
+
 ## Retrospective output
 
 Sections (see template):

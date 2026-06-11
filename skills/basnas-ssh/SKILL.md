@@ -3,7 +3,7 @@ name: basnas-ssh
 description: >-
   Run docker and git on BasNAS over non-interactive SSH. Use when ssh bas@basnas,
   NAS troubleshooting, docker ps/exec on QNAP, docker or git command not found over SSH,
-  or QNAP PATH/sshd setup.
+  quoting or pipe errors over SSH from Windows, or QNAP PATH/sshd setup.
 ---
 
 # BasNAS SSH (docker and git)
@@ -17,6 +17,57 @@ ssh bas@basnas 'git --version'
 ```
 
 Connection alias: `bas@basnas` or `$LOCAL_SERVER_SSH` from [local-server.env.example](../deploy-basnas-container/local-server.env.example).
+
+## Quoting and pipes (Windows → SSH)
+
+**Default:** no remote pipes. Run a broad command on the NAS and filter in the agent or locally.
+
+```powershell
+ssh bas@basnas 'docker ps --format "{{.Names}}"'
+```
+
+Nested quotes across PowerShell → SSH → remote Bash break easily. A failed pattern:
+
+```powershell
+# BAD — | in grep pattern becomes shell pipes; bash runs postgres/airflow as commands
+ssh bas@basnas 'docker ps --format "{{.Names}}\t{{.Image}}" | grep -E "kafka|postgres|airflow"'
+```
+
+Symptom: `bash: postgres: command not found` / `bash: airflow: command not found` — **quoting**, not missing packages.
+
+**If you must grep on the NAS**, single-quote the regex on the remote side:
+
+```powershell
+ssh bas@basnas "docker ps --format '{{.Names}}' | grep -E 'kafka|postgres|airflow'"
+```
+
+**Prefer Docker filters** over remote `grep`:
+
+```powershell
+ssh bas@basnas 'docker ps --format "{{.Names}}\t{{.Image}}" --filter name=kafka --filter name=airflow'
+```
+
+(`--filter name=` is substring match; repeat flags for multiple names.)
+
+**Copy-paste — list data-stack containers by name:**
+
+```powershell
+ssh bas@basnas 'docker ps --format "{{.Names}}\t{{.Image}}"'
+```
+
+Then match `airflow`, `kafka`, `postgres` in the output (container may be named `basnas_postgress`).
+
+## Skill maintenance (not automatic)
+
+Agents improvise SSH quoting, pipes, paths, and env vars every session. Cursor does **not** update this skill from failures by itself.
+
+After deploy or NAS troubleshooting in a release period:
+
+1. Review terminal output and agent transcripts for `ssh bas@basnas` — failed commands, retries, and what finally worked.
+2. Log new signatures in `.cursor/troubleshooting-errors.md` (see **troubleshooting-error-log**).
+3. At [release retrospective](../release-retrospective/SKILL.md), add **Promotions** to extend this skill (quoting examples, `$LOCAL_SERVER_SSH`, container names, copy-paste blocks).
+
+Narrative: [lessons-learned-part2 — Local server interaction](https://github.com/basvdberg/data-solution-2026/blob/main/lessons-learned-part2.md#local-server-interaction-learn-from-ssh-commands).
 
 ## Forbidden anti-pattern
 
