@@ -20,7 +20,9 @@ When working in **data-solution-2026**:
 
 1. After deploy/validation, draft `release/retrospective/<version>.md` per `release-retrospective` skill.
 2. Link incidents and retro from `release/notes/<version>.md` → **Related artifacts**.
-3. Do not edit skills, rules, or checklists from retro action items until the user approves promotions.
+3. Update release metadata per `release-details-updater` skill when version folders change.
+4. Deploy app changes via `deploy-data-solution-basnas` skill (commit and push to `main`).
+5. Do not edit skills, rules, or checklists from retro action items until the user approves promotions.
 
 ## Artifact roles
 
@@ -29,3 +31,5 @@ When working in **data-solution-2026**:
 - `release/retrospective/` — sprint retro per release
 - `doc/operation/incident/` — blameless postmortems (INC-NNN)
 - `.cursor/troubleshooting-errors.md` — session ERR log
+
+**Note:** This rule applies when `data-solution-2026` is a folder in the multi-root workspace. Open `Data Engineering 2.0.code-workspace` for full rule coverage.

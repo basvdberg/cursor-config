@@ -1,11 +1,22 @@
 ---
 description: Enforce kebab-case naming for markdown files and folders
-alwaysApply: true
+globs: "**/*.{md,mdc}"
+alwaysApply: false
 ---
 
 # Markdown and Folder Naming Standard
 
-Use `kebab-case` for all newly created or renamed folders and markdown files in this project.
+Use `kebab-case` for all newly created or renamed folders and markdown files in this workspace.
+
+For non-markdown files and documented exceptions (`readme.md`, ecosystem folders), see the `naming-convention-files-folders` skill.
+
+## Does not apply to Cursor agent assets
+
+This rule does **not** apply to:
+
+- `cursor-config/skills/**` — Cursor agent skills (`SKILL.md` uses a fixed uppercase name; supporting files follow Cursor skill layout)
+- `cursor-config/rules/**` — Cursor rules (`.mdc` with YAML frontmatter)
+- `SKILL.md` anywhere (Cursor skill entrypoint)
 
 ## Required format
 

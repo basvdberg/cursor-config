@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 RELEASE_METADATA_ONLY = re.compile(
-    r"^release/\d{4}/\d{2}/\d{2}/[^/]+/(readme|prompts)\.md$"
+    r"^release/\d{4}/\d{2}/\d{2}/[^/]+/(readme|prompts|notes|retrospective)\.md$"
 )
 
 from cursor_config import (
@@ -22,6 +22,7 @@ from cursor_config import (
     config_root,
     folder_name_valid,
     git_repo_root,
+    is_exempt_from_content_markdown_layout,
     pre_commit_mode,
 )
 
@@ -48,12 +49,25 @@ def get_markdown_files() -> list[Path]:
 
 
 def get_content_files() -> list[Path]:
-    return [f for f in get_markdown_files() if f.name not in EXCLUDED_FILES]
+    return [
+        f
+        for f in get_markdown_files()
+        if f.name not in EXCLUDED_FILES
+        and not is_exempt_from_content_markdown_layout(f, CURSOR_CONFIG)
+    ]
+
+
+def get_naming_files() -> list[Path]:
+    return [
+        f
+        for f in get_markdown_files()
+        if not is_exempt_from_content_markdown_layout(f, CURSOR_CONFIG)
+    ]
 
 
 def check_naming_conventions() -> list[str]:
     errors: list[str] = []
-    for path in get_markdown_files():
+    for path in get_naming_files():
         rel = path.relative_to(PROJECT_ROOT)
         stem = path.stem
         if stem != "readme" and not KEBAB_CASE_PATTERN.match(stem):
@@ -138,25 +152,22 @@ def get_staged_paths() -> list[str]:
     return [line.strip().replace("\\", "/") for line in result.stdout.splitlines() if line.strip()]
 
 
-def should_bump_release() -> bool:
+def release_hooks_enabled() -> bool:
     version_file = PROJECT_ROOT / "release" / "VERSION"
-    script = PROJECT_ROOT / "release" / "scripts" / "new-release.ps1"
-    if not version_file.is_file() or not script.is_file():
+    if not version_file.is_file():
         return False
     if get_git_branch() != "main":
         return False
-    staged = get_staged_paths()
-    if not staged:
-        return False
-    if all(RELEASE_METADATA_ONLY.match(path) for path in staged):
-        return False
     if os.environ.get("SKIP_RELEASE", "").strip().lower() in {"1", "true", "yes"}:
+        return False
+    staged = get_staged_paths()
+    if staged and all(RELEASE_METADATA_ONLY.match(path) for path in staged):
         return False
     return True
 
 
-def run_new_release() -> None:
-    script = PROJECT_ROOT / "release" / "scripts" / "new-release.ps1"
+def run_release_powershell(script_name: str) -> None:
+    script = PROJECT_ROOT / "release" / "scripts" / script_name
     if not script.is_file() or sys.platform != "win32":
         return
     subprocess.run(
@@ -171,6 +182,15 @@ def run_new_release() -> None:
         cwd=PROJECT_ROOT,
         check=False,
     )
+
+
+def run_release_lifecycle() -> None:
+    if not release_hooks_enabled():
+        return
+    if os.environ.get("NEW_RELEASE", "").strip().lower() in {"1", "true", "yes"}:
+        run_release_powershell("new-release.ps1")
+    else:
+        run_release_powershell("ensure-open-release.ps1")
 
 
 def run_update_deploy_config() -> None:
@@ -232,8 +252,7 @@ def main() -> int:
     mode = pre_commit_mode(PROJECT_ROOT)
     errors: list[str] = []
 
-    if should_bump_release():
-        run_new_release()
+    run_release_lifecycle()
 
     run_update_deploy_config()
 

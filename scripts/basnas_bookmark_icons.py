@@ -19,9 +19,7 @@ ICON_SIZE = 32
 # walkxcode/dashboard-icons (homelab-friendly)
 ICON_SLUG: dict[str, str] = {
     "admin-qts": "qnap",
-    "kafka-ui": "kafka",
     "airflow-standalone": "apache-airflow",
-    "jobhunter-app": "homepage",
     "immich_server": "immich",
     "plex": "plex",
     "qbittorrent-1": "qbittorrent",

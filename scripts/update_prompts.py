@@ -278,6 +278,15 @@ def remove_legacy_root_prompts(repo_root: Path, target: Path) -> None:
         print(f"removed: {PROMPTS_FILENAME} (release-scoped prompts only)")
 
 
+def is_header_only_prompts(content: str) -> bool:
+    lines = [line.strip() for line in content.strip().splitlines() if line.strip()]
+    if not lines:
+        return True
+    if len(lines) == 1 and lines[0].startswith("#"):
+        return True
+    return False
+
+
 def generate_prompts_md(project: str, sessions: list[list[str]]) -> str:
     lines = [
         "# Prompts",
@@ -308,11 +317,15 @@ def update_prompts(repo_root: Path, project: str | None = None) -> bool:
     prompts_path = resolve_prompts_path(repo_root)
     release_scoped = prompts_path != (repo_root / PROMPTS_FILENAME).resolve()
     remove_legacy_root_prompts(repo_root, prompts_path)
+
+    if release_scoped and not sessions:
+        return False
+
     new_content = generate_prompts_md(project, sessions)
 
     if prompts_path.exists():
         current = prompts_path.read_text(encoding="utf-8")
-        if release_scoped:
+        if release_scoped and not is_header_only_prompts(current):
             # Curated per-release prompts are not overwritten from the repo-root hook.
             return False
         if current.strip() == new_content.strip():

@@ -1,6 +1,6 @@
 ---
 description: TOC generation rules for markdown files
-globs: **/*.md
+globs: "**/*.md"
 alwaysApply: false
 ---
 
@@ -8,9 +8,23 @@ alwaysApply: false
 
 When generating or updating a table of contents (TOC) in a markdown file:
 
+## Does not apply to Cursor agent assets
+
+Do **not** add or refresh content-doc TOC blocks on:
+
+- `cursor-config/skills/**` (`SKILL.md` and supporting skill markdown)
+- `cursor-config/rules/**` (`.mdc` rules)
+
+Cursor skills use YAML frontmatter at the top of `SKILL.md` per the Cursor skill convention — not `#` title + `## Table of contents`.
+
+## TOC rules (content documentation)
+
 - Do NOT include the document title (h1 heading) in the TOC entries.
 - Do NOT include a self-referencing "Table of contents" entry.
+- Do NOT include `## Project structure` in the TOC (auto-generated block).
 - Start the TOC at the first h2 section below the title.
+
+Use `cursor-config/scripts/update_markdown_docs.py --toc-only` or the `markdown-toc` skill. Wrap generated TOC entries in `<!-- markdown-toc:start -->` / `<!-- markdown-toc:end -->` markers.
 
 Example — given this document structure:
 

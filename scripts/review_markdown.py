@@ -33,13 +33,42 @@ REPOS_REQUIRE_DESIGN_PATTERNS = frozenset(
 DESIGN_PATTERNS_REQUIRED_PREFIX = "doc/design/"
 PATTERN_REPO_EXEMPT_PREFIXES = ("design-patterns/", "definitions/", "implementation/")
 sys.path.insert(0, str(SCRIPT_DIR))
-from cursor_config import folder_name_valid  # noqa: E402
+from cursor_config import folder_name_valid, is_exempt_from_content_markdown_layout  # noqa: E402
 
 KEBAB = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
 HEADING = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
 FENCE = re.compile(r"^```")
 PROSE_START = re.compile(r"^[A-Za-z\[\"]")
 SKIP_SPELL_DIRS = frozenset({".git", ".cursor", "node_modules", "__pycache__"})
+PRIVATE_GITHUB_RE = re.compile(
+    r"https?://(?:www\.)?github\.com/[^/\s)]+/([^/\s)]+)"
+)
+
+
+def load_private_repo_slugs(config_root: Path | None) -> set[str]:
+    if config_root is None:
+        return set()
+    manifest = config_root / "project-structure-external.json"
+    if not manifest.is_file():
+        return set()
+    data = json.loads(manifest.read_text(encoding="utf-8"))
+    return set(data.get("private", []))
+
+
+def check_private_urls(path: Path, content: str, private_slugs: set[str], issues: list[Issue]) -> None:
+    if not private_slugs:
+        return
+    prose = re.sub(r"```.*?```", "", content, flags=re.DOTALL)
+    for match in PRIVATE_GITHUB_RE.finditer(prose):
+        slug = match.group(1).rstrip(")")
+        if slug in private_slugs:
+            issues.append(
+                Issue(
+                    "ERROR",
+                    path,
+                    f"private repo link github.com/.../{slug} — use repo name only",
+                )
+            )
 
 
 class Issue:
@@ -120,10 +149,14 @@ def is_handlebars_template(path: Path) -> bool:
     return path.name.lower().endswith(HANDLEBARS_SUFFIX)
 
 
-def is_exempt_structure_file(path: Path) -> bool:
+def is_exempt_structure_file(path: Path, config_root: Path | None = None) -> bool:
     if path.name.lower() in EXCLUDED_FROM_STRUCTURE_CHECKS:
         return True
-    return is_handlebars_template(path)
+    if is_handlebars_template(path):
+        return True
+    if is_exempt_from_content_markdown_layout(path, config_root):
+        return True
+    return False
 
 
 def requires_design_patterns_section(path: Path, repo_root: Path) -> bool:
@@ -168,7 +201,9 @@ def check_design_patterns_section(
         )
 
 
-def check_naming(path: Path, repo: Path, issues: list[Issue]) -> None:
+def check_naming(path: Path, repo: Path, issues: list[Issue], config_root: Path | None) -> None:
+    if is_exempt_from_content_markdown_layout(path, config_root):
+        return
     rel = path.relative_to(repo)
     stem = path.stem
     if path.name.lower() == "readme.md":
@@ -188,8 +223,8 @@ def check_naming(path: Path, repo: Path, issues: list[Issue]) -> None:
             )
 
 
-def check_blocks(path: Path, content: str, issues: list[Issue]) -> None:
-    if is_exempt_structure_file(path):
+def check_blocks(path: Path, content: str, issues: list[Issue], config_root: Path | None) -> None:
+    if is_exempt_structure_file(path, config_root):
         return
     lowered = content.lower()
     if TOC_START not in content or TOC_END not in content:
@@ -202,8 +237,10 @@ def check_blocks(path: Path, content: str, issues: list[Issue]) -> None:
         issues.append(Issue("ERROR", path, "missing '## Project structure' heading"))
 
 
-def check_headings_and_orphans(path: Path, content: str, issues: list[Issue]) -> None:
-    if is_exempt_structure_file(path):
+def check_headings_and_orphans(
+    path: Path, content: str, issues: list[Issue], config_root: Path | None
+) -> None:
+    if is_exempt_structure_file(path, config_root):
         return
     body = strip_generated_sections(content)
     lines = body.splitlines()
@@ -364,6 +401,8 @@ def review_file(
     spell: object | None,
     domain: set[str],
     typos: dict[str, str],
+    private_slugs: set[str] | None = None,
+    config_root: Path | None = None,
 ) -> list[Issue]:
     issues: list[Issue] = []
     try:
@@ -372,10 +411,12 @@ def review_file(
         issues.append(Issue("ERROR", path, f"cannot read file: {exc}"))
         return issues
 
-    check_naming(path, repo, issues)
-    check_blocks(path, content, issues)
+    check_naming(path, repo, issues, config_root)
+    check_blocks(path, content, issues, config_root)
     check_design_patterns_section(path, content, repo, issues)
-    check_headings_and_orphans(path, content, issues)
+    check_headings_and_orphans(path, content, issues, config_root)
+    if private_slugs:
+        check_private_urls(path, content, private_slugs, issues)
     if not is_handlebars_template(path):
         check_spelling(path, content, issues, spell, domain, typos)
     return issues
@@ -401,6 +442,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Apply typos.json fixes and run update_markdown_docs.py per repo",
     )
+    parser.add_argument(
+        "--check-private-urls",
+        action="store_true",
+        help="Flag clickable GitHub URLs to private repos (cursor-config policy)",
+    )
     args = parser.parse_args(argv)
 
     roots = args.paths or [Path.cwd()]
@@ -420,13 +466,31 @@ def main(argv: list[str] | None = None) -> int:
 
     repos_to_fix: set[Path] = set()
     all_issues: list[Issue] = []
+    private_slugs: set[str] = set()
+    config_root: Path | None = None
+    try:
+        import cursor_config
+
+        config_root = cursor_config.config_root(Path.cwd())
+    except (ImportError, FileNotFoundError):
+        config_root = SCRIPT_DIR.parent if (SCRIPT_DIR.parent / "skills").is_dir() else None
+
+    if args.check_private_urls:
+        try:
+            import cursor_config
+
+            private_slugs = load_private_repo_slugs(cursor_config.config_root(Path.cwd()))
+        except (ImportError, FileNotFoundError):
+            private_slugs = load_private_repo_slugs(SCRIPT_DIR.parent)
 
     for path in files:
         repo = find_repo_root(path)
         if args.fix:
             repos_to_fix.add(repo)
             apply_typo_fixes(path, typos)
-        all_issues.extend(review_file(path, repo, spell, domain, typos))
+        all_issues.extend(
+            review_file(path, repo, spell, domain, typos, private_slugs or None, config_root)
+        )
 
     if args.fix:
         for repo in sorted(repos_to_fix):

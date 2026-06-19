@@ -1,0 +1,33 @@
+# /share/.../docker/registry/port-registry.yaml on BasNAS
+
+ranges:
+  office_services: 18000-18999
+  infrastructure: 19000-19099
+
+reserved:
+  nginx-http: 9080
+  nginx-https: 9443
+  airflow: 8081
+  immich: 2283
+  immich-postgres: 5432
+  plex: 32400
+  qts-https: 8443
+
+allocations:
+  # Example fixed ports for media (when refactoring):
+  # radarr:
+  #   host_port: 18078
+  #   container_port: 7878
+  # qbittorrent:
+  #   host_port: 18081
+  #   container_port: 8080
+  # nzbget:
+  #   host_port: 18079
+  #   container_port: 6789
+
+  plex:
+    host_port: 32400
+    container_port: 32400
+    container_name: plex
+    protocol: tcp
+    status: planned

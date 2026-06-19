@@ -15,9 +15,7 @@ BROWSER_ACCESS = frozenset({"https_basnas", "https_office", "raw_lan_port"})
 
 TITLE_OVERRIDES = {
     "admin-qts": "QNAP Admin",
-    "kafka-ui": "Kafka UI",
     "airflow-standalone": "Airflow",
-    "jobhunter-app": "Jobhunter",
     "immich_server": "Immich",
     "qbittorrent-1": "qBittorrent",
     "radarr-3": "Radarr",

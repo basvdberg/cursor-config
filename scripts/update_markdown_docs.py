@@ -9,8 +9,15 @@ import os
 import re
 import subprocess
 import sys
+import sys
 from pathlib import Path
 from typing import Iterable
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+from cursor_config import is_exempt_from_content_markdown_layout  # noqa: E402
 
 DESCRIPTIONS_FILE = "project-structure-descriptions.json"
 EXTERNAL_REPOS_FILE = "project-structure-external.json"
@@ -694,7 +701,12 @@ def update_file(
     *,
     toc_only: bool = False,
     structure_only: bool = False,
+    config_root: Path | None = None,
 ) -> bool:
+    if config_root is None:
+        config_root = config_root_for_repo(repo_root)
+    if is_exempt_from_content_markdown_layout(path, config_root):
+        return False
     original = path.read_text(encoding="utf-8")
     cleaned = strip_generated_blocks(original)
     title, body = split_title_and_body(cleaned)
@@ -724,12 +736,29 @@ def update_file(
     return True
 
 
-def discover_markdown_files(repo_root: Path) -> list[Path]:
+def config_root_for_repo(repo_root: Path) -> Path | None:
+    if (repo_root / "skills").is_dir() and (repo_root / "rules").is_dir():
+        return repo_root.resolve()
+    try:
+        from cursor_config import config_root
+
+        return config_root(repo_root)
+    except (ImportError, FileNotFoundError):
+        return None
+
+
+def discover_markdown_files(
+    repo_root: Path, config_root: Path | None = None
+) -> list[Path]:
+    if config_root is None:
+        config_root = config_root_for_repo(repo_root)
     files: list[Path] = []
     for path in repo_root.rglob("*.md"):
         if any(part in EXCLUDE_DIR_NAMES or part.startswith(".") for part in path.parts):
             continue
         if path.is_file() and path.name.lower() not in {"prompts.md"}:
+            if is_exempt_from_content_markdown_layout(path, config_root):
+                continue
             files.append(path)
     return sorted(files)
 
@@ -767,10 +796,11 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     repo_root = args.root.resolve() if args.root else git_root(Path.cwd())
+    config_root = config_root_for_repo(repo_root)
     if args.paths:
         targets = [p.resolve() for p in args.paths]
     else:
-        targets = discover_markdown_files(repo_root)
+        targets = discover_markdown_files(repo_root, config_root)
 
     changed = 0
     for path in targets:
@@ -779,12 +809,15 @@ def main(argv: list[str] | None = None) -> int:
             continue
         if path.suffix.lower() != ".md":
             continue
+        if is_exempt_from_content_markdown_layout(path, config_root):
+            continue
         if update_file(
             path,
             repo_root,
             check=args.check,
             toc_only=args.toc_only,
             structure_only=args.structure_only,
+            config_root=config_root,
         ):
             changed += 1
 

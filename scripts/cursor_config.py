@@ -111,6 +111,49 @@ def config_root(repo_root: Path | None = None) -> Path:
     )
 
 
+CURSOR_SKILLS_DIR = "skills"
+CURSOR_RULES_DIR = "rules"
+SKILL_MD_NAME = "SKILL.md"
+
+
+def is_under_config_subdir(path: Path, config_root: Path, subdir: str) -> bool:
+    try:
+        rel = path.resolve().relative_to(config_root.resolve())
+    except ValueError:
+        return False
+    return bool(rel.parts) and rel.parts[0] == subdir
+
+
+def is_cursor_skill_markdown(path: Path, config_root: Path | None = None) -> bool:
+    """True for SKILL.md and other markdown under cursor-config/skills/."""
+    if path.name == SKILL_MD_NAME:
+        return True
+    if config_root is None:
+        return False
+    return (
+        path.suffix.lower() == ".md"
+        and is_under_config_subdir(path, config_root, CURSOR_SKILLS_DIR)
+    )
+
+
+def is_cursor_rule_file(path: Path, config_root: Path | None = None) -> bool:
+    """True for .mdc files and everything under cursor-config/rules/."""
+    if path.suffix.lower() == ".mdc":
+        return True
+    if config_root is None:
+        return False
+    return is_under_config_subdir(path, config_root, CURSOR_RULES_DIR)
+
+
+def is_exempt_from_content_markdown_layout(
+    path: Path, config_root: Path | None = None
+) -> bool:
+    """Content-doc TOC/structure/naming rules do not apply to Cursor skills or rules."""
+    return is_cursor_skill_markdown(path, config_root) or is_cursor_rule_file(
+        path, config_root
+    )
+
+
 def pre_commit_mode(repo_root: Path | None = None) -> str:
     """Return pre-commit mode: 'strict' (naming + marker checks) or 'standard'."""
     repo_root = (repo_root or git_repo_root()).resolve()
