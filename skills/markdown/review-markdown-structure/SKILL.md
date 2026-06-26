@@ -100,6 +100,7 @@ Public GitHub documentation must make sense to readers who do not know your home
 | **Document title** | Exactly one `#` title as the first non-empty line. |
 | **Heading tree** | Headings are `##`–`######` only in body; no level skips (e.g. `##` then `####`); document title (`#`) not repeated in TOC. |
 | **Paragraphs under headings** | No orphan prose between TOC/structure blocks and the first `##`, or between sections (prose must follow a heading). |
+| **Define once (design patterns)** | In `data-engineering-design-patterns/design-patterns/`, examples must not restate Component definitions (`**Notes:**` glossaries or `**Term** is …` bullets that match `####` headings). Use-case lead-in prose must not echo contract field values already shown in the JSON; state constraints and non-obvious choices only. For use-case authoring (coverage, numbering, viewpoints), apply `create-use-case`. |
 | **Table of contents** | Required on content `.md` files: `## Table of contents` + `markdown-toc` markers. Exempt: `prompts.md`, `*.handlebars.md`, `SKILL.md`, `cursor-config/skills/**`, `cursor-config/rules/**` (ADL templates). |
 | **Design patterns** | Required `## Design patterns` after TOC only under `doc/design/` (see [Design patterns section](#design-patterns-section)). Listed in the TOC when present. |
 | **Project structure** | Same exempt list: `## Project structure` + `markdown-project-structure` markers at end of file. |

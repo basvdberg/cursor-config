@@ -52,6 +52,10 @@ Log results in the table below. Link failures to ERR entries or retro action ite
     - [Cursor rules & skills dashboard](cursor-dashboard.md)
   - Githooks
   - Rules
+    - Coding Standards
+    - Markdown
+    - Operations
+    - Security
   - Skills
     - Authoring
       - Create Design Pattern
@@ -59,6 +63,8 @@ Log results in the table below. Link failures to ERR entries or retro action ite
         - [{Title}](../skills/authoring/create-design-pattern/TEMPLATE.md)
       - Create Skill
         - [Create skill (cursor-config)](../skills/authoring/create-skill/SKILL.md)
+      - Create Use Case
+        - [Create use case](../skills/authoring/create-use-case/SKILL.md)
     - Basnas
       - Basnas Ssh
         - [BasNAS SSH (docker and git)](../skills/basnas/basnas-ssh/SKILL.md)
@@ -83,6 +89,8 @@ Log results in the table below. Link failures to ERR entries or retro action ite
     - Markdown
       - Markdown Project Structure
         - [Markdown project structure](../skills/markdown/markdown-project-structure/SKILL.md)
+      - Markdown References
+        - [Markdown references](../skills/markdown/markdown-references/SKILL.md)
       - Markdown Toc
         - [Markdown table of contents](../skills/markdown/markdown-toc/SKILL.md)
       - Review Markdown Structure

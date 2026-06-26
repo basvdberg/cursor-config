@@ -1,0 +1,16 @@
+---
+description: Prefer English over Dutch in agent output and documentation
+alwaysApply: true
+---
+
+# Prefer English
+
+Default to **English** for:
+
+- Agent chat replies and explanations
+- Documentation, comments, and commit messages you author
+- Variable names, config keys, and user-facing strings in code
+
+Use Dutch only when the user writes in Dutch, asks for Dutch, or the material is explicitly Dutch-localized (for example NL customer copy).
+
+When both languages are plausible, choose English.

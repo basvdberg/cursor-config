@@ -15,7 +15,13 @@ import sys
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from skill_paths import iter_skill_md, skill_group_label  # noqa: E402
+from skill_paths import (  # noqa: E402
+    iter_rule_mdc,
+    iter_skill_md,
+    ordered_groups,
+    rule_group_label,
+    skill_group_label,
+)
 
 CONFIG_ROOT = SCRIPT_DIR.parent
 OUTPUT = CONFIG_ROOT / "doc" / "cursor-dashboard.md"
@@ -70,7 +76,7 @@ def is_junction(path: Path) -> bool:
 def count_project_rules_skills(project: Path) -> tuple[int, int, list[str]]:
     notes: list[str] = []
     if project.name == "cursor-config":
-        rules = len(list((project / "rules").glob("*.mdc")))
+        rules = len(list((project / "rules").rglob("*.mdc")))
         skills = len(iter_skill_md(project / "skills"))
         return rules, skills, notes
 
@@ -214,11 +220,7 @@ def load_rule(path: Path) -> dict:
         issues.append("missing YAML frontmatter")
     if not desc:
         issues.append("missing `description` in frontmatter")
-    group = "markdown & docs"
-    if "private" in path.stem:
-        group = "security & policy"
-    elif "issue" in path.stem:
-        group = "operations & release"
+    group = rule_group_label(path)
     score, score_notes = score_item(
         "rule",
         lines,
@@ -289,7 +291,7 @@ def skill_group(name: str, source: str) -> str:
 def build() -> str:
     today = date.today().isoformat()
     uh = user_home_counts()
-    cc_rules = len(list((CONFIG_ROOT / "rules").glob("*.mdc")))
+    cc_rules = len(iter_rule_mdc())
     cc_skills = len(iter_skill_md())
     merged_rules = cc_rules + uh["rules"]
     merged_skills = cc_skills + uh["skills_real"]
@@ -357,7 +359,7 @@ def build() -> str:
         ]
     )
 
-    rules = [load_rule(p) for p in sorted((CONFIG_ROOT / "rules").glob("*.mdc"))]
+    rules = [load_rule(p) for p in iter_rule_mdc()]
     skills: list[dict] = []
     for skill_md in iter_skill_md():
         skills.append(
@@ -380,7 +382,7 @@ def build() -> str:
     by_group: dict[str, list[dict]] = {}
     for r in rules:
         by_group.setdefault(r["group"], []).append(r)
-    for group in sorted(by_group):
+    for group in ordered_groups(by_group):
         lines.append(f"### {group}")
         lines.append("")
         lines.append("| Rule | Score | Lines | Summary | Issues |")
@@ -399,26 +401,7 @@ def build() -> str:
     for s in skills:
         skill_groups.setdefault(s["group"], []).append(s)
 
-    group_order = [
-        "markdown & documentation",
-        "authoring & templates",
-        "BasNAS & deployment",
-        "operations & release",
-        "bookmarks & sync",
-        "coding standards",
-        "workspace custom",
-        "authoring & migration (Cursor built-in)",
-        "code review (Cursor built-in)",
-        "automation & workflow (Cursor built-in)",
-        "canvas & SDK (Cursor built-in)",
-        "IDE & CLI config (Cursor built-in)",
-        "Cursor built-in",
-    ]
-    seen = set()
-    ordered = [g for g in group_order if g in skill_groups]
-    ordered += [g for g in sorted(skill_groups) if g not in ordered]
-
-    for group in ordered:
+    for group in ordered_groups(skill_groups):
         items = skill_groups[group]
         lines.append(f"### {group}")
         lines.append("")

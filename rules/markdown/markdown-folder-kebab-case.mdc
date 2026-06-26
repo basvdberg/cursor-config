@@ -1,0 +1,14 @@
+---
+description: Use kebab-case filenames and paths; not camelCase or PascalCase
+alwaysApply: true
+---
+
+# Kebab-case filenames
+
+When creating or renaming **files and folders**, use lowercase **kebab-case** (`data-object-refresh-contract.md`, `poll-worker.py`).
+
+Do **not** use `camelCase`, `PascalCase`, or `snake_case` for paths unless an existing repo layer already documents an exception (for example `000_Source` prefixes).
+
+Pattern: `[a-z0-9]+(-[a-z0-9]+)*` plus the extension.
+
+For the full checklist (singular, short names, layer exceptions), use the `naming-convention-files-folders` skill.

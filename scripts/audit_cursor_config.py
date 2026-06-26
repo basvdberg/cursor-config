@@ -12,7 +12,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-from skill_paths import iter_skill_md  # noqa: E402
+from skill_paths import iter_rule_mdc, iter_skill_md  # noqa: E402
 
 CONFIG_ROOT = SCRIPT_DIR.parent
 SKILLS_DIR = CONFIG_ROOT / "skills"
@@ -162,7 +162,7 @@ def audit_private_links(path: Path, private_slugs: set[str], issues: list[Issue]
 
 
 def audit_rules(issues: list[Issue]) -> None:
-    for rule in sorted(RULES_DIR.glob("*.mdc")):
+    for rule in iter_rule_mdc():
         text = rule.read_text(encoding="utf-8")
         if not text.startswith("---"):
             issues.append(Issue("ERROR", rule, "Missing YAML frontmatter"))

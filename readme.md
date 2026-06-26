@@ -21,7 +21,7 @@ Repository: [github.com/basvdberg/cursor-config](https://github.com/basvdberg/cu
 
 | Path | Purpose |
 |------|---------|
-| `rules/` | Shared Cursor rules (`.mdc`); single copy only—no per-repo `.cursor/rules` |
+| `rules/` | Shared Cursor rules (`.mdc`) in category folders (`markdown/`, `operations/`, `security/`, …); single copy only—no per-repo `.cursor/rules` |
 | `scripts/` | Python tools and install scripts (`install-cursor.ps1`, `update_markdown_docs.py`, …) |
 | `githooks/` | Shared `pre-commit` and `post-commit` hooks for consumer repos |
 | `skills/` | Cursor agent skills in category folders (`markdown/`, `basnas/`, `operations/`, …); `install-skills.ps1` junctions leaf folders flat into `~/.cursor/skills/` |
@@ -131,6 +131,10 @@ Git config `cursor.configPath` is set automatically by `setup-githooks`.
     - [Cursor rules & skills dashboard](doc/cursor-dashboard.md)
   - Githooks
   - Rules
+    - Coding Standards
+    - Markdown
+    - Operations
+    - Security
   - Skills
     - Authoring
       - Create Design Pattern
@@ -138,6 +142,8 @@ Git config `cursor.configPath` is set automatically by `setup-githooks`.
         - [{Title}](skills/authoring/create-design-pattern/TEMPLATE.md)
       - Create Skill
         - [Create skill (cursor-config)](skills/authoring/create-skill/SKILL.md)
+      - Create Use Case
+        - [Create use case](skills/authoring/create-use-case/SKILL.md)
     - Basnas
       - Basnas Ssh
         - [BasNAS SSH (docker and git)](skills/basnas/basnas-ssh/SKILL.md)
@@ -162,6 +168,8 @@ Git config `cursor.configPath` is set automatically by `setup-githooks`.
     - Markdown
       - Markdown Project Structure
         - [Markdown project structure](skills/markdown/markdown-project-structure/SKILL.md)
+      - Markdown References
+        - [Markdown references](skills/markdown/markdown-references/SKILL.md)
       - Markdown Toc
         - [Markdown table of contents](skills/markdown/markdown-toc/SKILL.md)
       - Review Markdown Structure

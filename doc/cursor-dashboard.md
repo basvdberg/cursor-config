@@ -15,7 +15,7 @@ Counts of `.mdc` rules and `SKILL.md` skills. **Merged (effective custom)** = cu
 | workspace / data-engineering-design-patterns | 0 | 0 | — |
 | workspace / adl-feedback | 0 | 0 | — |
 | **cursor-config** (canonical) | **4** | **15** | Shared rules + skills source of truth |
-| user home `~/.cursor/skills` | — | 15 junctions + 0 real | All 15 installed skills are junctions → cursor-config |
+| user home `~/.cursor/skills` | — | 14 junctions + 0 real | All 14 installed skills are junctions → cursor-config |
 | user home `~/.cursor/skills-cursor` | — | 18 | Cursor-managed built-ins (not merged) |
 | user home `~/.cursor/rules` | 0 | — | directory absent |
 | **Merged effective custom** | **4** | **15** | cursor-config + non-symlink user-home skills/rules |
@@ -44,24 +44,24 @@ Audit: `python scripts/audit_cursor_config.py` (cursor-config skills/rules).
 
 ## Rules (cursor-config)
 
-### markdown & docs
+### markdown & documentation
 
 | Rule | Score | Lines | Summary | Issues |
 |------|------:|------:|---------|--------|
-| [markdown-folder-kebab-case](rules/markdown-folder-kebab-case.mdc) | 10.0 | 33 | Enforce kebab-case naming for markdown files and folders | — |
-| [markdown-toc-no-title](rules/markdown-toc-no-title.mdc) | 9.0 | 41 | TOC generation rules for markdown files | short description; weak WHEN triggers |
+| [markdown-folder-kebab-case](rules/markdown/markdown-folder-kebab-case.mdc) | 10.0 | 41 | Enforce kebab-case naming for markdown files and folders | — |
+| [markdown-toc-no-title](rules/markdown/markdown-toc-no-title.mdc) | 8.0 | 52 | TOC generation rules for markdown files | short description; weak WHEN triggers; rule >50 lines; consider a skill |
 
 ### operations & release
 
 | Rule | Score | Lines | Summary | Issues |
 |------|------:|------:|---------|--------|
-| [issue-inventory](rules/issue-inventory.mdc) | 10.0 | 35 | Issue inventory — ERR log, incident promotion, per-release retrospectives (data-solution-2026) | — |
+| [issue-inventory](rules/operations/issue-inventory.mdc) | 10.0 | 35 | Issue inventory — ERR log, incident promotion, per-release retrospectives (data-solution-2026) | — |
 
 ### security & policy
 
 | Rule | Score | Lines | Summary | Issues |
 |------|------:|------:|---------|--------|
-| [no-private-git-repo-links](rules/no-private-git-repo-links.mdc) | 10.0 | 40 | Do not link to private Git repositories in docs or agent output | — |
+| [no-private-git-repo-links](rules/security/no-private-git-repo-links.mdc) | 10.0 | 40 | Do not link to private Git repositories in docs or agent output | — |
 
 ## Skills
 
@@ -69,46 +69,46 @@ Audit: `python scripts/audit_cursor_config.py` (cursor-config skills/rules).
 
 | Skill | Source | Score | Lines | Summary | Issues |
 |-------|--------|------:|------:|---------|--------|
-| [markdown-project-structure](skills/markdown/markdown-project-structure/SKILL.md) | cursor-config | 9.0 | 191 | Generates a project structure block: full nested site map for the current repo only, plus related public repositories di… | TOC before frontmatter (move YAML to line 1) |
-| [markdown-toc](skills/markdown/markdown-toc/SKILL.md) | cursor-config | 9.0 | 160 | Generates and refreshes Markdown table-of-contents blocks from ##–###### headings only. Never includes the document # ti… | TOC before frontmatter (move YAML to line 1) |
-| [review-markdown-structure](skills/markdown/review-markdown-structure/SKILL.md) | cursor-config | 8.5 | 226 | Reviews and authors Markdown for spelling, kebab-case naming, heading hierarchy, orphan paragraphs, required TOC/project… | TOC before frontmatter (move YAML to line 1) |
+| [markdown-project-structure](skills/markdown/markdown-project-structure/SKILL.md) | cursor-config | 10.0 | 122 | Generates a project structure block: full nested site map for the current repo only, plus related public repositories di… | — |
+| [markdown-toc](skills/markdown/markdown-toc/SKILL.md) | cursor-config | 10.0 | 90 | Generates and refreshes Markdown table-of-contents blocks from ##–###### headings only. Never includes the document # ti… | — |
+| [review-markdown-structure](skills/markdown/review-markdown-structure/SKILL.md) | cursor-config | 10.0 | 156 | Reviews and authors Markdown for spelling, kebab-case naming, heading hierarchy, orphan paragraphs, required TOC/project… | — |
 
 ### authoring & templates
 
 | Skill | Source | Score | Lines | Summary | Issues |
 |-------|--------|------:|------:|---------|--------|
-| [create-design-pattern](skills/authoring/create-design-pattern/SKILL.md) | cursor-config | 9.0 | 141 | Creates compact, technology-agnostic design pattern markdown in data-engineering-design-patterns/design-patterns/. Use w… | TOC before frontmatter (move YAML to line 1) |
-| [create-skill](skills/authoring/create-skill/SKILL.md) | cursor-config | 8.5 | 212 | Creates Cursor Agent Skills in the cursor-config repository (canonical store). Use when authoring a new skill, asking ab… | TOC before frontmatter (move YAML to line 1) |
+| [create-design-pattern](skills/authoring/create-design-pattern/SKILL.md) | cursor-config | 10.0 | 65 | Creates compact, technology-agnostic design pattern markdown in data-engineering-design-patterns/design-patterns/. Use w… | — |
+| [create-skill](skills/authoring/create-skill/SKILL.md) | cursor-config | 9.0 | 142 | Creates Cursor Agent Skills in the cursor-config repository (canonical store). Use when authoring a new skill, asking ab… | TOC before frontmatter (move YAML to line 1) |
 
 ### BasNAS & deployment
 
 | Skill | Source | Score | Lines | Summary | Issues |
 |-------|--------|------:|------:|---------|--------|
-| [basnas-ssh](skills/basnas/basnas-ssh/SKILL.md) | cursor-config | 8.5 | 216 | Run docker and git on BasNAS over non-interactive SSH. Use when ssh bas@basnas, NAS troubleshooting, docker ps/exec on Q… | TOC before frontmatter (move YAML to line 1) |
-| [deploy-basnas-container](skills/basnas/deploy-basnas-container/SKILL.md) | cursor-config | 8.5 | 215 | Design and deploy Docker services on local server with fixed host ports, NGINX HTTPS termination, dual DNS (office.c2h.n… | TOC before frontmatter (move YAML to line 1) |
-| [deploy-data-solution-basnas](skills/basnas/deploy-data-solution-basnas/SKILL.md) | cursor-config | 9.0 | 170 | Deploy data-solution-2026 to BasNAS via CI/CD: commit and push to main; GitHub Actions tests and release; post-push hook… | TOC before frontmatter (move YAML to line 1) |
+| [basnas-ssh](skills/basnas/basnas-ssh/SKILL.md) | cursor-config | 10.0 | 141 | Run docker and git on BasNAS over non-interactive SSH. Use when ssh bas@basnas, NAS troubleshooting, docker ps/exec on Q… | — |
+| [deploy-basnas-container](skills/basnas/deploy-basnas-container/SKILL.md) | cursor-config | 10.0 | 134 | Design and deploy Docker services on local server with fixed host ports, NGINX HTTPS termination, dual DNS (office.c2h.n… | — |
+| [deploy-data-solution-basnas](skills/basnas/deploy-data-solution-basnas/SKILL.md) | cursor-config | 10.0 | 97 | Deploy data-solution-2026 to BasNAS via CI/CD: commit and push to main; GitHub Actions tests and release; post-push hook… | — |
 
 ### operations & release
 
 | Skill | Source | Score | Lines | Summary | Issues |
 |-------|--------|------:|------:|---------|--------|
-| [release-details-updater](skills/operations/release-details-updater/SKILL.md) | cursor-config | 9.0 | 141 | Maintain release/YYYY/MM/DD/<version>/ metadata and prompts per release. Use when creating releases, updating release no… | TOC before frontmatter (move YAML to line 1) |
-| [release-retrospective](skills/operations/release-retrospective/SKILL.md) | cursor-config | 8.5 | 234 | Drafts per-release sprint retrospectives from ERR entries, incidents, and validation results; proposes action items and … | TOC before frontmatter (move YAML to line 1) |
-| [troubleshooting-error-log](skills/operations/troubleshooting-error-log/SKILL.md) | cursor-config | 8.5 | 228 | Records shell, SSH, Docker, and script failures during agent troubleshooting with short descriptions and solutions; dedu… | TOC before frontmatter (move YAML to line 1) |
+| [release-details-updater](skills/operations/release-details-updater/SKILL.md) | cursor-config | 10.0 | 66 | Maintain release/YYYY/MM/DD/<version>/ metadata and prompts per release. Use when creating releases, updating release no… | — |
+| [release-retrospective](skills/operations/release-retrospective/SKILL.md) | cursor-config | 10.0 | 153 | Drafts per-release sprint retrospectives from ERR entries, incidents, and validation results; proposes action items and … | — |
+| [troubleshooting-error-log](skills/operations/troubleshooting-error-log/SKILL.md) | cursor-config | 10.0 | 149 | Records shell, SSH, Docker, and script failures during agent troubleshooting with short descriptions and solutions; dedu… | — |
 
 ### bookmarks & sync
 
 | Skill | Source | Score | Lines | Summary | Issues |
 |-------|--------|------:|------:|---------|--------|
-| [browser-bookmarks-sync](skills/sync/browser-bookmarks-sync/SKILL.md) | cursor-config | 9.0 | 172 | Merge Chrome and Brave bookmarks, inject local server service URLs from service-url-map.yaml, and commit to the private … | TOC before frontmatter (move YAML to line 1) |
+| [browser-bookmarks-sync](skills/sync/browser-bookmarks-sync/SKILL.md) | cursor-config | 10.0 | 96 | Merge Chrome and Brave bookmarks, inject local server service URLs from service-url-map.yaml, and commit to the private … | — |
 
 ### coding standards
 
 | Skill | Source | Score | Lines | Summary | Issues |
 |-------|--------|------:|------:|---------|--------|
-| [naming-convention-files-folders](skills/coding-standards/naming-convention-files-folders/SKILL.md) | cursor-config | 9.0 | 99 | Names files and folders using common GitHub conventions plus singular, short, non-conjugated names. Use when creating or… | — |
-| [pretty-color-logging](skills/coding-standards/pretty-color-logging/SKILL.md) | cursor-config | 9.0 | 131 | Standardize Python CLI logging with readable, colorized, structured output. Use when adding or improving logs for script… | TOC before frontmatter (move YAML to line 1) |
-| [variable-naming](skills/coding-standards/variable-naming/SKILL.md) | cursor-config | 8.5 | 223 | Names variables, environment keys, and config settings after the semantics of their value, not the component or feature … | TOC before frontmatter (move YAML to line 1) |
+| [naming-convention-files-folders](skills/coding-standards/naming-convention-files-folders/SKILL.md) | cursor-config | 10.0 | 99 | Names files and folders using common GitHub conventions plus singular, short, non-conjugated names. Use when creating or… | — |
+| [pretty-color-logging](skills/coding-standards/pretty-color-logging/SKILL.md) | cursor-config | 10.0 | 56 | Standardize Python CLI logging with readable, colorized, structured output. Use when adding or improving logs for script… | — |
+| [variable-naming](skills/coding-standards/variable-naming/SKILL.md) | cursor-config | 10.0 | 140 | Names variables, environment keys, and config settings after the semantics of their value, not the component or feature … | — |
 
 ### authoring & migration (Cursor built-in)
 
@@ -172,3 +172,72 @@ Audit: `python scripts/audit_cursor_config.py` (cursor-config skills/rules).
 
 Several cursor-config skills place the generated TOC above YAML frontmatter (valid for docs, non-standard for skill discovery). Consider moving frontmatter to line 1 per `create-skill` template.
 
+## Project structure
+
+<!-- markdown-project-structure:start -->
+- [cursor-config](../readme.md)
+  - Doc
+    - [Agent smoke tests](agent-smoke-tests.md)
+    - [Cursor rules & skills dashboard](cursor-dashboard.md)
+  - Githooks
+  - Rules
+    - Coding Standards
+    - Markdown
+    - Operations
+    - Security
+  - Skills
+    - Authoring
+      - Create Design Pattern
+        - [Create design pattern](../skills/authoring/create-design-pattern/SKILL.md)
+        - [{Title}](../skills/authoring/create-design-pattern/TEMPLATE.md)
+      - Create Skill
+        - [Create skill (cursor-config)](../skills/authoring/create-skill/SKILL.md)
+      - Create Use Case
+        - [Create use case](../skills/authoring/create-use-case/SKILL.md)
+    - Basnas
+      - Basnas Ssh
+        - [BasNAS SSH (docker and git)](../skills/basnas/basnas-ssh/SKILL.md)
+      - Deploy Basnas Container
+        - Templates
+        - [Fix admin hostname not resolving](../skills/basnas/deploy-basnas-container/dns-basnas-setup.md)
+        - [Examples](../skills/basnas/deploy-basnas-container/examples.md)
+        - [NGINX as HTTPS edge on port 443 (local server / QNAP)](../skills/basnas/deploy-basnas-container/nginx-on-443.md)
+        - [local server deployment reference](../skills/basnas/deploy-basnas-container/reference.md)
+        - [Deploy container service on local server](../skills/basnas/deploy-basnas-container/SKILL.md)
+        - [Troubleshooting “Your connection is not private” (*.example)](../skills/basnas/deploy-basnas-container/troubleshooting-tls.md)
+        - [local server URL map](../skills/basnas/deploy-basnas-container/url-map.md)
+      - Deploy Data Solution Basnas
+        - [Deploy Data Solution 2026 to BasNAS (CI/CD)](../skills/basnas/deploy-data-solution-basnas/SKILL.md)
+    - Coding Standards
+      - Naming Convention Files Folders
+        - [Naming convention for files and folders](../skills/coding-standards/naming-convention-files-folders/SKILL.md)
+      - Pretty Color Logging
+        - [Pretty Color Logging](../skills/coding-standards/pretty-color-logging/SKILL.md)
+      - Variable Naming
+        - [Variable naming](../skills/coding-standards/variable-naming/SKILL.md)
+    - Markdown
+      - Markdown Project Structure
+        - [Markdown project structure](../skills/markdown/markdown-project-structure/SKILL.md)
+      - Markdown References
+        - [Markdown references](../skills/markdown/markdown-references/SKILL.md)
+      - Markdown Toc
+        - [Markdown table of contents](../skills/markdown/markdown-toc/SKILL.md)
+      - Review Markdown Structure
+        - [Review Markdown structure](../skills/markdown/review-markdown-structure/SKILL.md)
+    - Operations
+      - Release Details Updater
+        - [Release Details Updater](../skills/operations/release-details-updater/SKILL.md)
+      - Release Retrospective
+        - [Release retrospective](../skills/operations/release-retrospective/SKILL.md)
+      - Troubleshooting Error Log
+        - [Examples](../skills/operations/troubleshooting-error-log/examples.md)
+        - [Troubleshooting error reference](../skills/operations/troubleshooting-error-log/reference.md)
+        - [Troubleshooting error log](../skills/operations/troubleshooting-error-log/SKILL.md)
+    - Sync
+      - Browser Bookmarks Sync
+        - [Browser bookmarks sync](../skills/sync/browser-bookmarks-sync/SKILL.md)
+- Related repositories
+  - [Data Engineering 2026](https://github.com/basvdberg/data-engineering-2026) — Course and learning materials
+  - [Data Engineering Design Patterns](https://github.com/basvdberg/data-engineering-design-patterns) — Design pattern catalogue
+  - [Data Solution 2026](https://github.com/basvdberg/data-solution-2026) — Data solution proof of concept
+<!-- markdown-project-structure:end -->

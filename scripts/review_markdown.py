@@ -43,6 +43,8 @@ SKIP_SPELL_DIRS = frozenset({".git", ".cursor", "node_modules", "__pycache__"})
 PRIVATE_GITHUB_RE = re.compile(
     r"https?://(?:www\.)?github\.com/[^/\s)]+/([^/\s)]+)"
 )
+GLOSSARY_BULLET = re.compile(r"^-\s+\*\*([^*]+)\*\*\s+is\s+", re.MULTILINE)
+NOTES_HEADING = re.compile(r"^\*\*Notes:\*\*\s*$", re.MULTILINE)
 
 
 def load_private_repo_slugs(config_root: Path | None) -> set[str]:
@@ -175,6 +177,71 @@ def requires_design_patterns_section(path: Path, repo_root: Path) -> bool:
     except ValueError:
         return False
     return rel.startswith(DESIGN_PATTERNS_REQUIRED_PREFIX)
+
+
+def is_design_pattern_file(path: Path, repo: Path) -> bool:
+    if repo.name != "data-engineering-design-patterns":
+        return False
+    try:
+        rel = path.relative_to(repo).as_posix()
+    except ValueError:
+        return False
+    return rel.startswith("design-patterns/") and rel.endswith(".md")
+
+
+def component_heading_terms(content: str) -> set[str]:
+    terms: set[str] = set()
+    for match in HEADING.finditer(content):
+        if len(match.group(1)) == 4:
+            terms.add(match.group(2).strip().lower())
+    return terms
+
+
+def glossary_term_matches_component(glossary_term: str, component_terms: set[str]) -> str | None:
+    normalized = glossary_term.strip().lower()
+    if normalized in component_terms:
+        return normalized
+    for component in component_terms:
+        if normalized.endswith(f" {component}") or normalized.endswith(component):
+            return component
+    return None
+
+
+def check_define_once_in_examples(
+    path: Path, content: str, repo: Path, issues: list[Issue]
+) -> None:
+    if not is_design_pattern_file(path, repo):
+        return
+
+    component_terms = component_heading_terms(content)
+    if not component_terms:
+        return
+
+    for match in NOTES_HEADING.finditer(content):
+        line = content[: match.start()].count("\n") + 1
+        issues.append(
+            Issue(
+                "WARN",
+                path,
+                "remove Notes glossaries from examples — define terms once in Components and reuse names in tables",
+                line,
+            )
+        )
+
+    for match in GLOSSARY_BULLET.finditer(content):
+        glossary_term = match.group(1).strip()
+        component = glossary_term_matches_component(glossary_term, component_terms)
+        if component is None:
+            continue
+        line = content[: match.start()].count("\n") + 1
+        issues.append(
+            Issue(
+                "WARN",
+                path,
+                f"example redefines '{glossary_term}' — already defined under #### {component.title()}",
+                line,
+            )
+        )
 
 
 def check_design_patterns_section(
@@ -414,6 +481,7 @@ def review_file(
     check_naming(path, repo, issues, config_root)
     check_blocks(path, content, issues, config_root)
     check_design_patterns_section(path, content, repo, issues)
+    check_define_once_in_examples(path, content, repo, issues)
     check_headings_and_orphans(path, content, issues, config_root)
     if private_slugs:
         check_private_urls(path, content, private_slugs, issues)

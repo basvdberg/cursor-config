@@ -54,12 +54,15 @@ alwaysApply: false      # true = every session in this workspace
 
 ## Rule index
 
+Category folders group related rules (same names as `skills/` categories). Rule identity is the `.mdc` stem.
+
 | Rule | `alwaysApply` | `globs` | Purpose |
 |------|---------------|---------|---------|
-| [no-private-git-repo-links](no-private-git-repo-links.mdc) | yes | — | No clickable URLs to private Git repos |
-| [markdown-folder-kebab-case](markdown-folder-kebab-case.mdc) | no | `**/*.{md,mdc}` | kebab-case for new/renamed markdown paths |
-| [markdown-toc-no-title](markdown-toc-no-title.mdc) | no | `**/*.md` | TOC excludes h1, self-ref, Project structure |
-| [issue-inventory](issue-inventory.mdc) | no | `data-solution-2026/**` | ERR log, INC promotion, release retro index |
+| [no-private-git-repo-links](security/no-private-git-repo-links.mdc) | yes | — | No clickable URLs to private Git repos |
+| [markdown-folder-kebab-case](markdown/markdown-folder-kebab-case.mdc) | yes | — | kebab-case for new/renamed files and folders (not camelCase) |
+| [prefer-english](coding-standards/prefer-english.mdc) | yes | — | English over Dutch unless user requests Dutch |
+| [markdown-toc-no-title](markdown/markdown-toc-no-title.mdc) | no | `**/*.md` | TOC excludes h1, self-ref, Project structure |
+| [issue-inventory](operations/issue-inventory.mdc) | no | `data-solution-2026/**` | ERR log, INC promotion, release retro index |
 
 ## Enforcement
 
@@ -95,6 +98,8 @@ python scripts/audit_cursor_config.py
       - Create Design Pattern
         - [Create design pattern](../skills/authoring/create-design-pattern/SKILL.md)
         - [{Title}](../skills/authoring/create-design-pattern/TEMPLATE.md)
+      - Create Use Case
+        - [Create use case](../skills/authoring/create-use-case/SKILL.md)
       - Create Skill
         - [Create skill (cursor-config)](../skills/authoring/create-skill/SKILL.md)
     - Basnas
